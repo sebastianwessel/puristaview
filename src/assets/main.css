@@ -1,3 +1,5 @@
+@import '@vue-flow/core/dist/style.css';
+@import '@vue-flow/core/dist/theme-default.css';
 
 #app {
   margin: 0;
@@ -7,3 +9,96 @@
   font-weight: normal;
 }
 
+body {
+  margin:0px;
+  padding:0px;
+}
+
+:root {
+  --default-space: 20px;
+
+  --service-color: rgb(100, 146, 246);
+  --command-color: rgb(18, 80, 213);
+  --subscription-color: rgb(247, 134, 207);
+  --event-color: rgb(9, 240, 9);
+  --rest-api-color: rgb(176, 176, 176);
+
+  --colored-border-width: 5px;
+}
+
+.border-top-service {
+  border-top: var(--colored-border-width) solid var(--service-color) !important;
+}
+
+.border-top-command {
+  border-top: var(--colored-border-width) solid var(--command-color) !important;
+}
+
+.border-top-subscription {
+  border-top: var(--colored-border-width) solid var(--subscription-color) !important;
+}
+
+.border-top-event {
+  border-top: var(--colored-border-width) solid var(--event-color) !important;
+}
+
+.border-top-rest-api {
+  border-top: var(--colored-border-width) solid var(--rest-api-color) !important;
+}
+
+.border-left-service {
+  border-left: var(--colored-border-width) solid var(--service-color) !important;
+}
+
+.border-left-command {
+  border-left: var(--colored-border-width) solid var(--command-color) !important;
+}
+
+.border-left-subscription {
+  border-left: var(--colored-border-width) solid var(--subscription-color) !important;
+}
+
+.border-left-event {
+  border-left: var(--colored-border-width) solid var(--event-color) !important;
+}
+
+.border-left-rest-api {
+  border-left: var(--colored-border-width) solid var(--rest-api-color) !important;
+}
+
+
+.el-table__empty-text {
+  line-height: 1.5rem !important;
+}
+
+
+.hljs {
+  border-radius: var(--el-border-radius-base);
+}
+
+.codeWindow {
+  .hljs {
+    height: 300px;
+    display: block;
+    overflow: scroll;
+  }
+}
+
+.copy-to-clipboard {
+  position: relative;
+}
+
+.copy-to-clipboard-btn {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  width: 35px;
+  height: 35px;
+}
+
+.anchor {
+  position:absolute;
+  margin-top:-60px;
+  width:0px;
+  height:0px;
+}

@@ -1,0 +1,34 @@
+.main-layout {
+  position: relative;
+}
+
+.el-menu-layout {
+  position: fixed;
+  left: 0;
+  margin-top: 60px;
+}
+
+.el-header {
+  position: fixed;
+  height: 12%;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  padding-left:0px !important;
+  padding-right: 0px !important;
+}
+
+.top-page {
+  margin:0px;
+  padding:0px !important;
+  margin-top: 60px;
+}
+
+.sidebar {
+  border-right: 1px solid var(--el-border-color-light);
+  padding-left: 2px;
+  padding-right: 2px;
+  position: relative;
+  background: var(--el-fill-color-extra-light);
+}
