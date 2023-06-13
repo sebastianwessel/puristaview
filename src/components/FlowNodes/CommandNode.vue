@@ -77,6 +77,7 @@ defineEmits(['updateNodeInternals'])
     justify-content: start;
     align-items: auto;
     align-content: start;
+    background-color: var(--el-fill-color-blank);
 
     .icon {
       flex: 0 0 auto;

@@ -11,9 +11,10 @@ import EndpointNode from '@/components/FlowNodes/EndpointNode.vue'
 import EventNode from '@/components/FlowNodes/EventNode.vue'
 import PayloadNode from '@/components/FlowNodes/PayloadNode.vue'
 import SubscriptionNode from '@/components/FlowNodes/SubscriptionNode.vue'
+import { useDependencyGraph } from '@/composeables/useDependencyGraph'
 import { logger } from '@/logger'
 
-const props = defineProps<{ elements: { nodes: FlowNode[]; edges: Edge[] } }>()
+const props = defineProps<{ id: string }>()
 
 const flowDiagram = ref<HTMLElement | null>(null)
 
@@ -25,78 +26,64 @@ const nodeTypes = {
   subscription: markRaw(SubscriptionNode),
 }
 
-const depNodes = ref<FlowNode[]>(props.elements.nodes)
-const depEdges = ref<Edge[]>(props.elements.edges)
+const depNodes = ref<FlowNode[]>([])
+const depEdges = ref<Edge[]>([])
 
 const { fitView, nodes } = useVueFlow({
   fitViewOnInit: true,
   nodeTypes,
-  // nodes: depNodes.value,
-  // edges: depEdges.value,
+  nodes: depNodes.value,
+  edges: depEdges.value,
 })
+
+const { getDependencies } = useDependencyGraph()
 
 const isGeneratingGraph = ref(true)
 
+const maxDepth = ref(1)
+
 const computeGraph = () => {
-  const elk = new ELK({})
-  const graph: ElkNode = {
-    id: 'root',
-    layoutOptions: {
-      'elk.nodeLabels.placement': 'INSIDE V_CENTER H_CENTER',
-      'elk.direction': 'DOWN',
-      nodeLayering: 'INTERACTIVE',
-      'org.eclipse.elk.edgeRouting': 'ORTHOGONAL',
-      'elk.layered.unnecessaryBendpoints': 'true',
-      'elk.layered.spacing.edgeNodeBetweenLayers': '50',
-      'org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment': 'BALANCED',
-      'org.eclipse.elk.layered.cycleBreaking.strategy': 'DEPTH_FIRST',
-      'org.eclipse.elk.insideSelfLoops.activate': 'true',
-      'spacing.componentComponent': '20',
-      'spacing.nodeNodeBetweenLayers': '20',
+  isGeneratingGraph.value = true
+  depNodes.value = []
+  depEdges.value = []
+  const elkInstance = new ELK()
+  const { elk } = getDependencies({
+    nodes: depNodes.value,
+    edges: depEdges.value,
+    id: props.id,
+    maxDepth: maxDepth.value,
+  })
 
-      /*
-
-    algorithm: 'layered',
-    // 'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
-    'elk.layered.nodePlacement.strategy': 'SIMPLE',
-    'spacing.nodeNodeBetweenLayers': '40',
-    'elk.direction': 'DOWN',
-    */
-    }, // { 'elk.algorithm': 'mrtree', 'spacing.nodeNodeBetweenLayers': 100 },
-    children: depNodes.value.map((node) => ({
-      id: node.id,
-      width: (node.data.width * 10 || 300) + 100,
-      height: node.data.eventName ? 150 : 100,
-    })),
-    edges: depEdges.value.map((edge) => ({
-      id: edge.id,
-      sources: [edge.source],
-      targets: [edge.target],
-    })),
-  }
-
-  elk
-    .layout(graph as any)
+  elkInstance
+    .layout(elk)
     .then((graph) => {
-      graph.children?.forEach((node) => {
-        const nodeToUpdate = nodes.value.find((n) => node.id === n.id)
+      // console.log(JSON.stringify(graph, null, 2))
+      const update = (n: ElkNode, offX = 0, offY = 0, i = 0) => {
+        // console.log(i, n.id, JSON.stringify(n.labels))
+        const x = (n.x || 0) + offX
+        const y = (n.y || 0) + offY
+        const nodeToUpdate = nodes.value.find((n2) => n2.id === n.id)
         if (nodeToUpdate) {
-          nodeToUpdate.position = { x: node.x as number, y: node.y as number }
+          nodeToUpdate.position = { x, y }
         }
-      })
+        n.children?.forEach((c) => update(c, x, y, i + 1))
+      }
+
+      update(graph)
+
       fitView()
       isGeneratingGraph.value = false
     })
-    .catch(logger.error)
+    .catch((err) => logger.error({ err }))
 }
 
 onMounted(computeGraph)
 
+watch(maxDepth, computeGraph)
+
 watch(
-  () => props.elements,
+  () => props.id,
   () => {
-    depNodes.value = props.elements.nodes
-    depEdges.value = props.elements.edges
     computeGraph()
   },
   { deep: true },
@@ -145,7 +132,7 @@ const centerFlow = () => fitView()
       v-loading="isGeneratingGraph"
       fit-view-on-init
       :prevent-scrolling="false"
-      :nodes-draggable="false"
+      :nodes-draggable="true"
       :nodes-connectable="false"
       class="flow-block"
       :nodes="depNodes"
@@ -161,6 +148,10 @@ const centerFlow = () => fitView()
         <ControlButton @click="openFullscreen"
           ><el-icon><FullScreen /></el-icon></ControlButton></Controls
     ></VueFlow>
+    <div class="slider-block">
+      <div style="color: var(--el-text-color-secondary)"><small>Depth</small></div>
+      <el-slider v-model="maxDepth" show-input :min="1" :max="10" show-stops />
+    </div>
   </div>
 </template>
 
@@ -179,8 +170,23 @@ const centerFlow = () => fitView()
 .flow-block-wrapper-fullscreen {
   .flow-block {
     border: 1px solid var(--el-border-color-light);
-    height: 100vh;
+    height: calc(100vh - 60px);
     width: 100vw;
   }
+  .slider-block {
+    margin: 10px;
+  }
+}
+</style>
+
+<style scoped>
+.slider-block {
+  display: flex;
+  align-items: center;
+}
+
+.slider-block .el-slider {
+  margin-top: 0;
+  margin-left: var(--default-space);
 }
 </style>

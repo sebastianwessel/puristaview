@@ -1,4 +1,4 @@
-import type { SupportedHttpMethod } from '@purista/core'
+import type { Prettify, SupportedHttpMethod } from '@purista/core'
 import { sort } from 'fast-sort'
 import { MultiDirectedGraph } from 'graphology'
 import { defineStore } from 'pinia'
@@ -10,8 +10,10 @@ import {
   type Command,
   type Endpoint,
   type Event,
+  type Ext,
   type GraphEdgeType,
   type GraphNodeType,
+  isEndpoint,
   NodeType,
   type Service,
   type Subscription,
@@ -116,25 +118,25 @@ export const useStore = defineStore('services', {
       return state.events
     },
     /** Get all known endpoints */
-    allEndpoints: (state): Endpoint[] => {
+    allEndpoints: (state): Prettify<Ext & Endpoint>[] => {
       return state.graph.reduceNodes<GraphNodeType[]>((ac, _node, attr) => {
-        if (attr.graphNodeType !== NodeType.Endpoint) {
+        if (isEndpoint(attr)) {
           return ac
         }
         return [...ac, attr]
-      }, []) as Endpoint[]
+      }, []) as Prettify<Ext & Endpoint>[]
     },
     /**
      * Returns list of commands that are invoked by given node
      */
     getCommandsInvokedBy: (state) => {
-      return (id: string): Command[] => {
+      return (id: string): Prettify<Ext & Command>[] => {
         try {
           return Array.from(state.graph.outboundNeighborEntries(id), (node) => node.attributes).filter(
             (node) => node.graphNodeType === NodeType.Command,
-          ) as Command[]
+          ) as Prettify<Ext & Command>[]
         } catch (err) {
-          logger.error({ err, id }, 'getInvokedCommands')
+          logger.error({ err, id }, 'getCommandsInvokedBy')
           return []
         }
       }
@@ -143,11 +145,11 @@ export const useStore = defineStore('services', {
      * Returns list of subscriptions that are consuming the output of given node
      */
     getConsumingSubscriptions: (state) => {
-      return (id: string): Subscription[] => {
+      return (id: string): Prettify<Ext & Subscription>[] => {
         try {
           return Array.from(state.graph.outboundNeighborEntries(id), (node) => node.attributes).filter(
             (node) => node.graphNodeType === NodeType.Subscription,
-          ) as Subscription[]
+          ) as Prettify<Ext & Subscription>[]
         } catch (err) {
           logger.error({ err, id }, 'getSubscribedSubscription')
           return []

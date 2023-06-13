@@ -1,38 +1,38 @@
 <script setup lang="ts">
 import { sort } from 'fast-sort'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import MarkdownContent from '@/components/MarkdownContent.vue'
-import { useServicesStore } from '@/stores/services'
+import { useStore } from '@/stores'
 
-const serviceStore = useServicesStore()
+const store = useStore()
 
 const router = useRouter()
 
 const props = defineProps<{ serviceName: string; serviceVersion: string }>()
 
-const service = serviceStore.getServiceByNameAndVersion(props.serviceName, props.serviceVersion)
+const service = computed(() => store.getServiceByNameAndVersion(props.serviceName, props.serviceVersion))
 
 const backToOverview = () => router.push({ name: 'services' })
 
-const markdownText = computed(() => service?.markdown)
+const markdownText = computed(() => service.value?.markdown)
 
 const commands = computed(() => {
-  if (!service) {
+  if (!service.value) {
     return []
   }
-  return sort(service.commands).by({
+  return sort(service.value.commands).by({
     asc: (u) => u.name,
     comparer: new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }).compare,
   })
 })
 
 const subscriptions = computed(() => {
-  if (!service) {
+  if (!service.value) {
     return []
   }
-  return sort(service.subscriptions).by({
+  return sort(service.value.subscriptions).by({
     asc: (u) => u.name,
     comparer: new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }).compare,
   })
@@ -40,7 +40,27 @@ const subscriptions = computed(() => {
 
 const events = computed(() => [])
 
-const endpoints = computed(() => [])
+const endpoints = computed(() => {
+  if (!service.value) {
+    return []
+  }
+  const res = service.value.commands
+    .filter((command) => !!command.restApi)
+    .map((command) => {
+      return {
+        commandName: command.name,
+        method: command.restApi?.method,
+        path: `v${service.value?.version}/${command.restApi?.path}`.replace('//', '/'),
+      }
+    })
+
+  return sort(res).by({
+    asc: (u) => u.path,
+    comparer: new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }).compare,
+  })
+})
+
+const activeConfigTab = ref('tsTypes')
 </script>
 
 <template>
@@ -93,6 +113,12 @@ const endpoints = computed(() => [])
                 <strong>Service Dependencies</strong>
               </template>
             </el-menu-item>
+            <el-menu-item index="#configuration">
+              <template #title>
+                <el-icon><Setting /></el-icon>
+                <strong>Custom Configuration</strong>
+              </template>
+            </el-menu-item>
           </el-menu>
         </div>
       </el-aside>
@@ -101,7 +127,7 @@ const endpoints = computed(() => [])
         <div id="general" class="anchor"></div>
         <div>
           <h2 style="margin-right: 5px">
-            {{ props.serviceName }}
+            Service {{ props.serviceName }}
             <small style="color: var(--el-text-color-secondary)">(v{{ props.serviceVersion }})</small>
             <el-tag
               v-if="service.deprecated"
@@ -146,7 +172,13 @@ const endpoints = computed(() => [])
               >
             </template>
           </el-table-column>
-          <el-table-column prop="eventName" label="Emits" width="300" sortable />
+          <el-table-column prop="eventName" label="Emits" width="300" sortable>
+            <template #default="scope">
+              <el-tag v-if="scope.row.eventName" size="large" type="success" effect="dark">{{
+                scope.row.eventName
+              }}</el-tag>
+            </template>
+          </el-table-column>
         </el-table>
         <el-divider />
 
@@ -175,7 +207,20 @@ const endpoints = computed(() => [])
               >
             </template>
           </el-table-column>
-          <el-table-column prop="eventName" label="Emits" width="300" sortable />
+          <el-table-column prop="subscribesTo.eventName" label="Subscribes" width="300" sortable>
+            <template #default="scope">
+              <el-tag v-if="scope.row.subscribesTo.eventName" size="large" type="success" effect="dark">{{
+                scope.row.subscribesTo.eventName
+              }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="eventName" label="Emits" width="300" sortable>
+            <template #default="scope">
+              <el-tag v-if="scope.row.eventName" size="large" type="success" effect="dark">{{
+                scope.row.eventName
+              }}</el-tag>
+            </template>
+          </el-table-column>
         </el-table>
         <el-divider />
 
@@ -190,7 +235,13 @@ const endpoints = computed(() => [])
         >
           <el-table-column prop="kind" sortable />
           <el-table-column prop="name" label="Name" sortable />
-          <el-table-column prop="eventName" label="Emits" width="300" sortable />
+          <el-table-column prop="eventName" label="Emits" width="300" sortable>
+            <template #default="scope">
+              <el-tag v-if="scope.row.eventName" size="large" type="success" effect="dark">{{
+                scope.row.eventName
+              }}</el-tag>
+            </template>
+          </el-table-column>
         </el-table>
         <el-divider />
 
@@ -203,14 +254,50 @@ const endpoints = computed(() => [])
           stripe
           :default-sort="{ prop: 'path', order: 'descending' }"
         >
-          <el-table-column prop="method" label="Name" sortable />
-          <el-table-column prop="path" label="Emits" width="300" sortable />
+          <el-table-column prop="method" label="Name" width="120" sortable />
+          <el-table-column prop="path" label="Path" sortable />
+          <el-table-column prop="commandName" label="Invokes" width="300" sortable>
+            <template #default="scope">
+              <RouterLink
+                :to="{
+                  name: 'commandInfo',
+                  params: {
+                    serviceName: service.name,
+                    serviceVersion: service.version,
+                    commandName: scope.row.commandName,
+                  },
+                }"
+                style="text-decoration: none"
+                ><strong>{{ scope.row.commandName }}</strong></RouterLink
+              >
+            </template>
+          </el-table-column>
         </el-table>
         <el-divider />
 
         <div id="dependencies" class="anchor"></div>
         <h2>Dependencies</h2>
+        <p>SOON 🤫</p>
         <el-divider />
+
+        <div id="configuration" class="anchor"></div>
+        <h2>Custom Configuration</h2>
+        <template v-if="service.configSchema">
+          <el-tabs v-model="activeConfigTab">
+            <el-tab-pane label="Typescript" name="tsTypes">
+              <TypeDisplay :schema="service.configSchema" />
+            </el-tab-pane>
+
+            <el-tab-pane label="OpenAPI-Schema" name="openApiSchema">
+              <YamlDisplay :schema="service.configSchema" />
+            </el-tab-pane>
+
+            <el-tab-pane label="Example-Json" name="example">
+              <ExampleDisplay :schema="service.configSchema" />
+            </el-tab-pane>
+          </el-tabs>
+        </template>
+        <p v-else>This service has not custom configuration.</p>
 
         <el-backtop :right="100" :bottom="100" />
       </el-main>

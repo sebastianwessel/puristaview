@@ -2,15 +2,15 @@
 import { DocumentCopy } from '@element-plus/icons-vue'
 import { useClipboard } from '@vueuse/core'
 import { ElMessage } from 'element-plus'
+import type { OpenAPIV3 } from 'openapi-types'
 import { computed } from 'vue'
 
-import type { SchemaObject } from '@/helper/schemaObjectToTsType/types'
 import { logger } from '@/logger'
 
 import { schemaObjectToTsType } from '../helper/schemaObjectToTsType/transform'
 import MarkdownContent from './MarkdownContent.vue'
 
-const props = defineProps<{ schema: SchemaObject; parameter?: SchemaObject }>()
+const props = defineProps<{ schema: OpenAPIV3.SchemaObject; parameter?: OpenAPIV3.SchemaObject }>()
 
 const content = computed(() => {
   const header = (props.schema.title || '') + '\n' + (props.schema.description || '')

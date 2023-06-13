@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { getUniqueId } from '@purista/core'
-import { type Edge, MarkerType, type Node as FlowNode } from '@vue-flow/core'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { getCommandId, getEndpointId, getSubscriptionId } from '@/helper'
+import { getCommandId } from '@/helper'
 import { useStore } from '@/stores'
-import { EdgeLabel, isCommand, isEndpoint, isSubscription, NodeType } from '@/types'
 
 import ExampleDisplay from './ExampleDisplay.vue'
 import JsonSchemaDisplay from './JsonSchemaDisplay.vue'
@@ -26,80 +23,7 @@ const command = computed(() =>
   store.getCommandByServiceAndName(props.serviceName, props.serviceVersion, props.commandName),
 )
 
-const maxDepth = ref(1)
-
-const elements = computed(() => {
-  const nodes: FlowNode[] = []
-
-  const edges: Edge[] = []
-
-  const id = getCommandId(props.serviceName, props.serviceVersion, props.commandName)
-  const commandNode = store.getCommandByServiceAndName(props.serviceName, props.serviceVersion, props.commandName)
-
-  if (!commandNode) {
-    return { edges, nodes }
-  }
-
-  const nodeIds = new Set<string>()
-
-  const parentNode = {
-    type: NodeType.Command,
-    id,
-    label: commandNode.name,
-    position: { x: 0, y: 0 },
-    data: {
-      graphNodeType: NodeType.Command,
-      serviceName: props.serviceName,
-      serviceVersion: props.serviceVersion,
-      width: commandNode.name.length,
-      ...commandNode,
-    },
-  }
-
-  nodes.push(parentNode)
-
-  store.getInputNodes(id).forEach((node) => {
-    const n = {
-      id: '',
-      type: node.graphNodeType,
-      position: { x: 0, y: 0 },
-      label: node.name,
-      data: {
-        width: node.name.length,
-        ...node,
-      },
-    }
-    const i: string = ''
-
-    if (isCommand(node)) {
-      n.id = getCommandId(node.serviceName, node.serviceVersion, node.name)
-    }
-
-    if (isSubscription(node)) {
-      n.id = getSubscriptionId(node.serviceName, node.serviceVersion, node.name)
-    }
-
-    if (isEndpoint(node)) {
-      n.id = getEndpointId(node.serviceVersion, node.method, node.path)
-    }
-
-    if (!nodeIds.has(i)) {
-      nodes.push(n)
-    }
-
-    edges.push({
-      id: getUniqueId(),
-      target: parentNode.id,
-      source: n.id,
-      label: EdgeLabel.Invoke,
-      markerEnd: MarkerType.ArrowClosed,
-      sourceHandle: 'bottom',
-      targetHandle: 'top',
-    })
-  })
-
-  return { edges, nodes }
-})
+const graphId = computed(() => getCommandId(props.serviceName, props.serviceVersion, props.commandName))
 
 const inputSchema = computed(() => command.value?.inputSchema)
 const parameterSchema = computed(() => command.value?.parameterSchema)
@@ -110,19 +34,15 @@ const activeInputTab = ref('tsTypes')
 const activeOutputTab = ref('tsTypes')
 
 const depsInvokes = computed(() => {
-  if (!command.value) {
-    return []
-  }
-
-  return command.value.invokes.map((entry) => ({ ...entry, kind: 'command' }))
+  return store.getCommandsInvokedBy(graphId.value)
 })
 
 const depsInvokedBy = computed(() => {
-  return []
+  return store.getInputNodes(graphId.value)
 })
 
 const depsSubscriptions = computed(() => {
-  return []
+  return store.getConsumingSubscriptions(graphId.value)
 })
 </script>
 
@@ -188,7 +108,7 @@ const depsSubscriptions = computed(() => {
         <div id="general" class="anchor"></div>
         <div>
           <h2 style="margin-right: 5px; flex-grow: 1">
-            {{ props.commandName }}
+            Command {{ props.commandName }}
             <el-tag
               v-if="command.deprecated"
               effect="dark"
@@ -204,9 +124,22 @@ const depsSubscriptions = computed(() => {
         <el-divider />
 
         <div style="margin-bottom: var(--default-space); margin-top: var(--default-space)">
-          <strong style="margin-right: var(--default-space)">Publishes:</strong>
-          <el-tag v-if="command.eventName" size="large" type="success" effect="dark">{{ command.eventName }}</el-tag>
-          <span v-else>regular message without event name</span>
+          <el-descriptions :column="2" direction="vertical">
+            <el-descriptions-item label="Publishes">
+              <el-tag v-if="command.eventName" size="large" type="success" effect="dark">{{
+                command.eventName
+              }}</el-tag>
+              <span v-else>regular message without event name</span>
+            </el-descriptions-item>
+            <el-descriptions-item label="REST-endpoint">
+              <template v-if="command.restApi">
+                <strong>{{ command.restApi?.method }}:</strong> v{{
+                  (serviceVersion + '/' + command.restApi?.path).replace('//', '/')
+                }}
+              </template>
+              <span v-else>none</span>
+            </el-descriptions-item>
+          </el-descriptions>
         </div>
 
         <template v-if="command.markdown?.trim().length">
@@ -219,12 +152,7 @@ const depsSubscriptions = computed(() => {
         <h4>
           Dependency graph of command <i>{{ command.name }}</i>
         </h4>
-        <FlowBlock :elements="elements" />
-        <div class="slider-block">
-          <div style="color: var(--el-text-color-secondary)"><small>Depth</small></div>
-          <el-slider v-model="maxDepth" show-input :min="1" :max="10" show-stops />
-        </div>
-
+        <FlowBlock :id="graphId" />
         <div id="it-invokes" class="anchor"></div>
         <h4>Invokes commands</h4>
         <el-table
@@ -233,8 +161,7 @@ const depsSubscriptions = computed(() => {
           :empty-text="'Command ' + commandName + ' does not invoke other known commands'"
           stripe
         >
-          <el-table-column prop="kind" label="Type" width="180" sortable />
-          <el-table-column prop="serviceName" label="Service" width="180" sortable />
+          <el-table-column prop="serviceName" label="Service" width="320" sortable />
           <el-table-column prop="serviceVersion" label="Version" width="100" sortable />
           <el-table-column prop="serviceTarget" label="Name" sortable />
         </el-table>
@@ -247,21 +174,39 @@ const depsSubscriptions = computed(() => {
           :empty-text="'Command ' + commandName + ' is not invoked by known commands or subscriptions'"
           stripe
         >
-          <el-table-column prop="kind" label="Type" width="180" style="border-left: 5px solid">
-            <template #default="scope">
-              <div
-                style="border-left: 5px solid; padding-left: 5px"
-                :style="{
-                  borderColor: scope.row.kind === 'command' ? 'var(--command-color)' : 'var(--subscription-color)',
+          <el-table-column prop="graphNodeType" label="Type" width="120" style="border-left: 5px solid" />
+          <el-table-column prop="serviceName" label="Service" width="200" sortable />
+          <el-table-column prop="serviceVersion" label="Version" width="100" sortable>
+            <template #default="scope"
+              ><RouterLink
+                :to="{
+                  name: 'serviceInfo',
+                  params: {
+                    serviceName: scope.row.serviceName,
+                    serviceVersion: scope.row.serviceVersion,
+                  },
                 }"
+                style="text-decoration: none"
+                ><strong>{{ scope.row.serviceVersion }}</strong></RouterLink
               >
-                {{ scope.row.kind }}
-              </div>
-            </template> </el-table-column
-          >>
-          <el-table-column prop="serviceName" label="Service" width="180" sortable />
-          <el-table-column prop="serviceVersion" label="Version" width="100" sortable />
-          <el-table-column prop="serviceTarget" label="Name" sortable />
+            </template>
+          </el-table-column>
+          <el-table-column prop="name" label="Name" sortable>
+            <template #default="scope">
+              <RouterLink
+                :to="{
+                  name: scope.row.graphNodeType + 'Info',
+                  params: {
+                    serviceName: scope.row.serviceName,
+                    serviceVersion: scope.row.serviceVersion,
+                    [scope.row.graphNodeType + 'Name']: scope.row.name,
+                  },
+                }"
+                style="text-decoration: none"
+                ><strong>{{ scope.row.name }}</strong></RouterLink
+              >
+            </template>
+          </el-table-column>
         </el-table>
 
         <div id="subscribed-by" class="anchor"></div>
@@ -272,10 +217,39 @@ const depsSubscriptions = computed(() => {
           :empty-text="'Success result of command ' + commandName + ' is not consumed by any known subscription'"
           stripe
         >
-          <el-table-column prop="kind" label="Type" width="180" />
-          <el-table-column prop="serviceName" label="Service" width="180" />
-          <el-table-column prop="serviceVersion" label="Version" width="100" />
-          <el-table-column prop="serviceTarget" label="Name" />
+          <el-table-column prop="graphNodeType" label="Type" width="120" />
+          <el-table-column prop="serviceName" label="Service" width="200"></el-table-column>
+          <el-table-column prop="serviceVersion" label="Version" width="100">
+            <template #default="scope"
+              ><RouterLink
+                :to="{
+                  name: 'serviceInfo',
+                  params: {
+                    serviceName: scope.row.serviceName,
+                    serviceVersion: scope.row.serviceVersion,
+                  },
+                }"
+                style="text-decoration: none"
+                ><strong>{{ scope.row.serviceVersion }}</strong></RouterLink
+              >
+            </template>
+          </el-table-column>
+          <el-table-column prop="name" label="Name">
+            <template #default="scope">
+              <RouterLink
+                :to="{
+                  name: scope.row.graphNodeType + 'Info',
+                  params: {
+                    serviceName: scope.row.serviceName,
+                    serviceVersion: scope.row.serviceVersion,
+                    [scope.row.graphNodeType + 'Name']: scope.row.name,
+                  },
+                }"
+                style="text-decoration: none"
+                ><strong>{{ scope.row.name }}</strong></RouterLink
+              >
+            </template>
+          </el-table-column>
         </el-table>
         <el-divider />
 
@@ -322,15 +296,3 @@ const depsSubscriptions = computed(() => {
   </template>
   <template v-else> Command not found </template>
 </template>
-
-<style scoped>
-.slider-block {
-  display: flex;
-  align-items: center;
-}
-
-.slider-block .el-slider {
-  margin-top: 0;
-  margin-left: var(--default-space);
-}
-</style>

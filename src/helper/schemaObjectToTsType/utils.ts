@@ -1,16 +1,4 @@
-interface CommentObject {
-  const?: unknown // jsdoc without value
-  default?: unknown // jsdoc with value
-  deprecated?: boolean // jsdoc without value
-  description?: string // jsdoc with value
-  enum?: unknown[] // jsdoc without value
-  example?: string // jsdoc with value
-  format?: string // not jsdoc
-  nullable?: boolean // Node information
-  summary?: string // not jsdoc
-  title?: string // not jsdoc
-  type?: string | string[] // Type of node
-}
+import type { OpenAPIV3 } from 'openapi-types'
 
 const COMMENT_RE = /\*\//g
 export const LB_RE = /\r?\n/g
@@ -50,7 +38,7 @@ export function walk(
  * @see {comment} for output examples
  * @returns void if not comments or jsdoc format comment string
  */
-export function getSchemaObjectComment(v: CommentObject, indentLv?: number): string | undefined {
+export function getSchemaObjectComment(v?: OpenAPIV3.SchemaObject, indentLv?: number): string | undefined {
   if (!v || typeof v !== 'object') {
     return
   }
@@ -60,8 +48,8 @@ export function getSchemaObjectComment(v: CommentObject, indentLv?: number): str
   if (v.title) {
     output.push(`${v.title} `)
   }
-  if (v.summary) {
-    output.push(`${v.summary} `)
+  if ((v as any).summary) {
+    output.push(`${(v as any).summary} `)
   }
   if (v.format) {
     output.push(`Format: ${v.format} `)
@@ -74,7 +62,7 @@ export function getSchemaObjectComment(v: CommentObject, indentLv?: number): str
   }
 
   // * JSDOC tags with value
-  const supportedJsDocTags: (keyof CommentObject)[] = ['description', 'default', 'example']
+  const supportedJsDocTags: (keyof OpenAPIV3.SchemaObject)[] = ['description', 'default', 'example']
   for (const field of supportedJsDocTags) {
     const allowEmptyString = field === 'default' || field === 'example'
     if (v[field] === undefined) {

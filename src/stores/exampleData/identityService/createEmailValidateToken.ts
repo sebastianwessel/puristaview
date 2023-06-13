@@ -3,7 +3,13 @@ import type { Subscription } from '../../../types'
 export const createEmailValidateToken: Subscription = {
   name: 'createEmailValidateToken',
   description: 'Creates a token used for email validation',
-  markdown: ``,
+  markdown: `The _createEmailValidateToken_ subscription listens for all new created users.
+
+To verify a users email address, a one-time random generated key will be created.  
+This key is part of the confirmation link, which is sent to the user.
+
+The user needs to verify teh email address to continue the onboarding process.
+`,
   eventName: 'validation-token-created',
   subscribesTo: {
     eventname: 'new-user-registered',

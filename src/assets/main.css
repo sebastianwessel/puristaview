@@ -71,6 +71,10 @@ body {
   line-height: 1.5rem !important;
 }
 
+.el-descriptions__label {
+  font-weight: bold !important;
+}
+
 
 .hljs {
   border-radius: var(--el-border-radius-base);

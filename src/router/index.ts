@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import CommandInfo from '@/components/CommandInfo.vue'
-import ServieVersionInfo from '@/components/ServiceVersionInfo.vue'
+import ServiceInfo from '@/components/ServiceInfo.vue'
 import SubscriptionInfo from '@/components/SubscriptionInfo.vue'
 import EventsView from '@/views/EventsView.vue'
 import HomeView from '@/views/HomeView.vue'
@@ -45,7 +45,7 @@ const router = createRouter({
           path: 'service',
           name: 'serviceInfo',
           props: true,
-          component: ServieVersionInfo,
+          component: ServiceInfo,
         },
         {
           name: 'commandInfo',
@@ -70,6 +70,14 @@ const router = createRouter({
       path: '/rest-api',
       name: 'restApi',
       component: RestApiView,
+      children: [
+        {
+          name: 'endpointInfo',
+          path: 'endpointName',
+          props: true,
+          component: SubscriptionInfo,
+        },
+      ],
     },
   ],
 })

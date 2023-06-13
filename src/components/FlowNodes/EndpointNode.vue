@@ -44,6 +44,7 @@ const url = computed(() => `v${props.data.serviceVersion}/${props.data.path}`)
     justify-content: start;
     align-items: auto;
     align-content: start;
+    background-color: var(--el-fill-color-blank);
 
     .icon {
       background: var(--rest-api-color);

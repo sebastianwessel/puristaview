@@ -1,4 +1,6 @@
-import type { GlobalContext, ReferenceObject, SchemaObject } from './types'
+import { OpenAPIV3 } from 'openapi-types'
+
+import type { GlobalContext } from './types'
 import {
   escObjKey,
   escStr,
@@ -24,7 +26,10 @@ export interface TransformSchemaObjectOptions {
   ctx: GlobalContext
 }
 
-export function schemaObjectToTsType(schemaObject: SchemaObject | ReferenceObject, options?: Partial<GlobalContext>) {
+export function schemaObjectToTsType(
+  schemaObject: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject,
+  options?: Partial<GlobalContext>,
+) {
   const ctx: GlobalContext = {
     additionalProperties: options?.additionalProperties ?? false,
     alphabetize: options?.alphabetize ?? false,
@@ -45,7 +50,7 @@ export function schemaObjectToTsType(schemaObject: SchemaObject | ReferenceObjec
 }
 
 export function transformSchemaObject(
-  schemaObject: SchemaObject | ReferenceObject,
+  schemaObject: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject,
   ctx: GlobalContext,
   path: string,
 ): string {
@@ -67,10 +72,11 @@ export function transformSchemaObject(
   }
 
   // const (valid for any type)
-  if (schemaObject.const !== null && schemaObject.const !== undefined) {
-    let schemaConst = schemaObject.const as any
-    if ('type' in schemaObject) {
-      if (schemaObject.type === 'string') {
+  const s = schemaObject as any
+  if (s.const !== null && s.const !== undefined) {
+    let schemaConst = s.const as any
+    if ('type' in s) {
+      if (s.type === 'string') {
         schemaConst = escStr(schemaConst)
       }
     }
@@ -106,8 +112,8 @@ export function transformSchemaObject(
   }
 
   // oneOf (no discriminator)
-  if ('oneOf' in schemaObject && !schemaObject.oneOf.some((t) => '$ref' in t && ctx.discriminators[t.$ref])) {
-    const maybeTypes = schemaObject.oneOf.map((item) => transformSchemaObject(item, ctx, path))
+  if ('oneOf' in schemaObject && !schemaObject.oneOf?.some((t) => '$ref' in t && ctx.discriminators[t.$ref])) {
+    const maybeTypes = schemaObject.oneOf?.map((item) => transformSchemaObject(item, ctx, path)) || []
     if (maybeTypes.some((t) => typeof t === 'string' && t.includes('{'))) {
       return tsOneOf(...maybeTypes)
     } // OneOf<> helper needed if any objects present ("{")
@@ -119,11 +125,12 @@ export function transformSchemaObject(
     if (Array.isArray(schemaObject.type)) {
       return tsOneOf(...schemaObject.type.map((t) => transformSchemaObject({ ...schemaObject, type: t }, ctx, path)))
     }
-
+    /*
     // "type": "null"
     if (schemaObject.type === 'null') {
       return schemaObject.type
     }
+    */
 
     // "type": "string" / "type": "null"
     if (schemaObject.type === 'string' || schemaObject.type === 'boolean') {
@@ -197,7 +204,7 @@ export function transformSchemaObject(
   ) {
     indentLv++
     for (const [k, v] of getEntries(schemaObject.properties ?? {}, ctx.alphabetize, ctx.excludeDeprecated)) {
-      const c = getSchemaObjectComment(v, indentLv)
+      const c = getSchemaObjectComment(v as OpenAPIV3.SchemaObject, indentLv)
       if (c) {
         coreType.push(indent(c, indentLv))
       }
@@ -221,7 +228,7 @@ export function transformSchemaObject(
           addlType = 'unknown'
         } else {
           addlType = transformSchemaObject(
-            schemaObject.additionalProperties as SchemaObject,
+            schemaObject.additionalProperties as OpenAPIV3.SchemaObject,
             { ...ctx, indentLv },
             path,
           )
@@ -237,8 +244,8 @@ export function transformSchemaObject(
     if (!(k in schemaObject)) {
       continue
     }
-    const discriminatorRef: ReferenceObject | undefined = (schemaObject as any)[k].find(
-      (t: SchemaObject | ReferenceObject) => '$ref' in t && ctx.discriminators[t.$ref],
+    const discriminatorRef: OpenAPIV3.ReferenceObject | undefined = (schemaObject as any)[k].find(
+      (t: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject) => '$ref' in t && ctx.discriminators[t.$ref],
     )
     if (discriminatorRef) {
       const discriminator = ctx.discriminators[discriminatorRef.$ref]
@@ -261,7 +268,7 @@ export function transformSchemaObject(
   let finalType = coreType.length ? `{\n${coreType.join('\n')}\n${indent('}', indentLv)}` : ''
 
   /** collect oneOf/allOf/anyOf with Omit<> for discriminators */
-  function collectCompositions(items: (SchemaObject | ReferenceObject)[]): string[] {
+  function collectCompositions(items: (OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject)[]): string[] {
     const output: string[] = []
     for (const item of items) {
       const itemType = transformSchemaObject(item, { ...ctx, indentLv }, path)

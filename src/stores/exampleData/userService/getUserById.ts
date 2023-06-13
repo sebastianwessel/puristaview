@@ -18,6 +18,10 @@ export const getUserById: Command = {
     required: ['id'],
     title: 'root test object',
   },
+  restApi: {
+    method: 'GET',
+    path: 'users/:userId',
+  },
   outputSchema: {
     type: 'object',
     properties: {
