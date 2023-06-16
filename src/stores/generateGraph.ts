@@ -1,9 +1,9 @@
-import type { EBMessageType } from '@purista/core'
 import type { MultiDirectedGraph } from 'graphology'
 
 import { getCommandId, getEndpointId, getSubscriptionId, isSubscriptionMatching } from '@/helper'
 import { logger } from '@/logger'
 import {
+  EBMessageType,
   EdgeLabel,
   type Event,
   type GraphEdgeType,

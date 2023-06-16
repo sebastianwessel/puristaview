@@ -1,4 +1,5 @@
 export * from './Command'
+export * from './EBMessageType.enum'
 export * from './EdgeLabel.enum'
 export * from './Endpoint'
 export * from './Event'
