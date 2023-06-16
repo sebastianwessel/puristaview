@@ -13,10 +13,10 @@
 
   --colored-border-width: 5px;
 
-  --font-family: 'Sofia Sans',Inter,ui-sans-serif,system-ui,-apple-system,"system-ui","Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  --font-family: Inter,ui-sans-serif,system-ui,-apple-system,"system-ui","Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
   --font-family-code:  'Roboto Mono', Consolas, monaco, monospace;
-  --el-font-size-base: 14px;
-  --default-font-size: 14px;
+  --el-font-size-base: 16px;
+  --default-font-size: 16px;
 }
 
 code, .mermaid, .el-tag {
@@ -35,7 +35,7 @@ button, input {
   font-size: var(--default-font-size);
   font-weight: normal;
   --el-font-size-base: var(--default-font-size);
-  --el-menu-item-font-size: var(--default-font-size);
+  --el-menu-item-font-size: 14px;
 }
 
 .el-table, .el-descriptions__cell {

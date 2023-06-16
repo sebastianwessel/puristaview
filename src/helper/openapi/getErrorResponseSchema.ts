@@ -1,5 +1,6 @@
-import type { StatusCode } from '@purista/core'
 import { OpenAPIV3 } from 'openapi-types'
+
+import { StatusCode } from '@/types'
 
 export const getErrorResponseSchema = (
   code: StatusCode,

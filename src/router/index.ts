@@ -6,6 +6,7 @@ import SubscriptionInfo from '@/components/SubscriptionInfo.vue'
 import DiscoverView from '@/views/DiscoverView.vue'
 import EventsView from '@/views/EventsView.vue'
 import HomeView from '@/views/HomeView.vue'
+import LanesView from '@/views/LanesView.vue'
 import ProjectInfoView from '@/views/ProjectInfoView.vue'
 import ProjectView from '@/views/ProjectView.vue'
 import RestApiView from '@/views/RestApiView.vue'
@@ -60,6 +61,12 @@ const router = createRouter({
                   name: 'services',
                   props: true,
                   component: ServicesView,
+                },
+                {
+                  path: 'lanes',
+                  name: 'lanes',
+                  props: true,
+                  component: LanesView,
                 },
               ],
             },

@@ -41,7 +41,7 @@ const active = computed(() => {
       <el-menu-item index="1" :route="{ name: 'projectInfo', params: { projectId } }"
         ><el-icon><Compass /></el-icon>Discover</el-menu-item
       >
-      <el-menu-item index="2" :route="{ name: 'services', params: { projectId } }"
+      <el-menu-item index="2" :route="{ name: 'lanes', params: { projectId } }"
         ><el-icon><ScaleToOriginal /></el-icon>Lanes</el-menu-item
       >
       <el-menu-item index="4" :route="{ name: 'restApi', params: { projectId } }"

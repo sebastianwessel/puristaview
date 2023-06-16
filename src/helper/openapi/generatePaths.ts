@@ -1,7 +1,7 @@
-import type { StatusCode } from '@purista/core'
 import { OpenAPIV3 } from 'openapi-types'
 
-import type { Endpoint } from '@/types'
+import { type Endpoint } from '@/types'
+import { StatusCode } from '@/types'
 
 import { getErrorName } from './getErrorName'
 import { getErrorResponseSchema } from './getErrorResponseSchema'

@@ -1,4 +1,4 @@
-import type { StatusCode } from '@purista/core'
+import { StatusCode } from '@/types'
 
 export const getErrorName = (code: StatusCode) =>
   StatusCode[code]
