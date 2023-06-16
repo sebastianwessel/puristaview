@@ -19,7 +19,15 @@ graph LR
     B -->|collecting information| C(Calling REST-API /new)
 \`\`\`
 `,
-  restApi: { method: 'POST', path: 'signUp', parameter: [], tags: [], errorCodes: [], isProtected: false },
+  restApi: {
+    method: 'POST',
+    path: 'signUp',
+    parameter: [],
+    tags: [],
+    errorCodes: [],
+    isProtected: false,
+    isDeprecated: false,
+  },
   invokes: [],
   publishesCustomEvents: [],
   inputSchema: {

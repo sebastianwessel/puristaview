@@ -4,6 +4,6 @@
   "compilerOptions": {
     "composite": true,
     "module": "ESNext",
-    "types": ["node","element-plus/global"]
+    "types": ["node","./components.d.ts"]
   }
 }

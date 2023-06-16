@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { DocumentCopy } from '@element-plus/icons-vue'
 import { useClipboard } from '@vueuse/core'
+import { ElMessage } from 'element-plus/lib/components/index.js'
 import type { OpenAPIV3 } from 'openapi-types'
 import { computed } from 'vue'
 

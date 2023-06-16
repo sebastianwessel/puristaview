@@ -25,6 +25,7 @@ export const getUserById: Command = {
     tags: [],
     errorCodes: [],
     isProtected: true,
+    isDeprecated: false,
   },
   outputSchema: {
     type: 'object',

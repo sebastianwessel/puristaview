@@ -12,7 +12,7 @@ export type Endpoint = {
   tags: string[]
   parameter: { name: string; required: boolean }[]
   isProtected: boolean
-  isDeprecated: boolean
+  isDeprecated?: boolean
   errorCodes: []
   operationId?: string
   /** indicate content type for input */
