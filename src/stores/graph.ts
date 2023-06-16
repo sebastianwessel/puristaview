@@ -19,10 +19,9 @@ import {
   type Subscription,
 } from '@/types'
 
-import { exampleData } from './exampleData'
 import { generateGraph } from './generateGraph'
 
-export type RootState = {
+export type RootStateGraph = {
   services: Service[]
   graph: MultiDirectedGraph<GraphNodeType, GraphEdgeType>
   events: Event[]
@@ -34,7 +33,7 @@ export const useStore = defineStore('services', {
       graph: new MultiDirectedGraph<GraphNodeType, GraphEdgeType>(),
       services: [],
       events: [],
-    } as RootState),
+    } as RootStateGraph),
   getters: {
     /**
      * Get a service by name and version
@@ -121,9 +120,10 @@ export const useStore = defineStore('services', {
     allEndpoints: (state): Prettify<Ext & Endpoint>[] => {
       return state.graph.reduceNodes<GraphNodeType[]>((ac, _node, attr) => {
         if (isEndpoint(attr)) {
-          return ac
+          return [...ac, attr]
         }
-        return [...ac, attr]
+        // return [...ac, attr]
+        return ac
       }, []) as Prettify<Ext & Endpoint>[]
     },
     /**
@@ -183,7 +183,7 @@ export const useStore = defineStore('services', {
     },
   },
   actions: {
-    init(services: Service[] = exampleData) {
+    init(services: Service[]) {
       this.services = services
       this.graph = new MultiDirectedGraph<GraphNodeType, GraphEdgeType>()
       const { events } = generateGraph(this.graph, services)

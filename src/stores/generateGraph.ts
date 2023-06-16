@@ -1,4 +1,4 @@
-import { EBMessageType } from '@purista/core'
+import type { EBMessageType } from '@purista/core'
 import type { MultiDirectedGraph } from 'graphology'
 
 import { getCommandId, getEndpointId, getSubscriptionId, isSubscriptionMatching } from '@/helper'
@@ -31,13 +31,17 @@ export const generateGraph = (graph: MultiDirectedGraph<GraphNodeType, GraphEdge
 
       if (command.restApi) {
         graph.addNode(getEndpointId(service.version, command.restApi.method, command.restApi.path), {
+          ...command.restApi,
           name: `${command.restApi.method}: v${service.version}/${command.restApi.path}`,
+          title: command.name,
+          description: command.description,
+          summary: command.restApi.summary,
           serviceName: service.name,
           serviceVersion: service.version,
           serviceTarget: command.name,
           graphNodeType: NodeType.Endpoint,
-          ...command.restApi,
-          deprecated: service.deprecated || command.deprecated,
+          outputSchema: command.outputSchema,
+          inputSchema: command.inputSchema,
         })
       }
     })
@@ -74,7 +78,6 @@ export const generateGraph = (graph: MultiDirectedGraph<GraphNodeType, GraphEdge
       subscription.invokes.forEach((invoke) => {
         const id = getCommandId(invoke.serviceName, invoke.serviceVersion, invoke.serviceTarget)
         graph.addDirectedEdge(subId, id, { label: EdgeLabel.Invoke, relation: Relation.Invokes })
-        console.log(subscription.name, 'invokes', invoke.serviceName, invoke.serviceVersion, invoke.serviceTarget)
       })
 
       services.forEach((s) =>

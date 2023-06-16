@@ -1,18 +1,6 @@
 @import '@vue-flow/core/dist/style.css';
 @import '@vue-flow/core/dist/theme-default.css';
-
-#app {
-  margin: 0;
-  padding: 0;
-  font-family: Inter,ui-sans-serif,system-ui,-apple-system,"system-ui","Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
-  font-size: 16px;
-  font-weight: normal;
-}
-
-body {
-  margin:0px;
-  padding:0px;
-}
+@import './fonts.css';
 
 :root {
   --default-space: 20px;
@@ -24,7 +12,47 @@ body {
   --rest-api-color: rgb(176, 176, 176);
 
   --colored-border-width: 5px;
+
+  --font-family: 'Sofia Sans',Inter,ui-sans-serif,system-ui,-apple-system,"system-ui","Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  --font-family-code:  'Roboto Mono', Consolas, monaco, monospace;
+  --el-font-size-base: 16px;
+  --default-font-size: 16px;
 }
+
+code, .mermaid, .el-tag {
+  font-family: var(--font-family-code) !important;
+  font-size: 0.9rem;
+}
+
+button, input {
+  font-family: var(--font-family);
+}
+
+#app {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  font-size: var(--default-font-size);
+  font-weight: normal;
+  --el-font-size-base: var(--default-font-size);
+  --el-menu-item-font-size: var(--default-font-size);
+}
+
+.el-table, .el-descriptions__cell {
+  font-size: inherit !important;
+}
+
+.el-table__empty-text {
+  font-size: 0.8rem;
+}
+
+
+body {
+  font-family: var(--font-family);
+  margin:0px;
+  padding:0px;
+}
+
 
 .border-top-service {
   border-top: var(--colored-border-width) solid var(--service-color) !important;
@@ -80,12 +108,10 @@ body {
   border-radius: var(--el-border-radius-base);
 }
 
-.codeWindow {
-  .hljs {
+.codeWindow .hljs {
     height: 300px;
     display: block;
     overflow: scroll;
-  }
 }
 
 .copy-to-clipboard {

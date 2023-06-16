@@ -30,5 +30,31 @@
   padding-left: 2px;
   padding-right: 2px;
   position: relative;
-  background: var(--el-fill-color-extra-light);
+  background: var(--el-fill-color-extra-light) !important;
+}
+
+.splitpanes__pane {
+  overflow: hidden !important;
+  position: relative;
+  background-color: transparent !important;
+  border-left: 2px solid var(--el-border-color-lighter);
+}
+
+.splitpanes__splitter {
+    border-left: 2px solid var(--el-border-color-lighter) !important;
+    background-color: var(--el-border-color-extra-light) !important;
+    background-image: url('./t.png') !important;
+    background-repeat: repeat-x;
+    background-attachment: fixed !important;
+    background-position: 1px 40vh !important;
+    position: relative !important;
+}
+
+
+
+.splitpanes__splitter::before {
+  display: none !important;
+}
+.splitpanes__splitter::after {
+ display: none !important;
 }

@@ -7,16 +7,13 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    '(chore': implementation)
     '(feat': graph implement)
     CommandInfo: typeof import('./src/components/CommandInfo.vue')['default']
     CommandNode: typeof import('./src/components/FlowNodes/CommandNode.vue')['default']
-    copy: typeof import('./src/components/SubscriptionInfo copy.vue')['default']
-    ElAffix: typeof import('element-plus/es')['ElAffix']
+    ContentWithLeftSidebar: typeof import('./src/components/ContentWithLeftSidebar.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElBacktop: typeof import('element-plus/es')['ElBacktop']
-    ElBadge: typeof import('element-plus/es')['ElBadge']
-    ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']
-    ElBreadcrumbItem: typeof import('element-plus/es')['ElBreadcrumbItem']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCol: typeof import('element-plus/es')['ElCol']
@@ -31,9 +28,10 @@ declare module 'vue' {
     ElMain: typeof import('element-plus/es')['ElMain']
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
+    ElPageHeader: typeof import('element-plus/es')['ElPageHeader']
     ElRow: typeof import('element-plus/es')['ElRow']
+    ElSlider: typeof import('element-plus/es')['ElSlider']
     ElStatistic: typeof import('element-plus/es')['ElStatistic']
-    ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']

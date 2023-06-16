@@ -21,10 +21,10 @@ defineEmits(['updateNodeInternals'])
     </div>
     <div class="label">
       <div>
-        <strong>{{ label }}</strong>
+        <strong style="font-size: 0.8rem; line-height: 0.8rem">{{ label }}</strong>
       </div>
       <div>
-        <small>{{ data.serviceName }} v{{ data.serviceVersion }}</small>
+        <small style="font-size: 0.7rem; line-height: 0.7rem">{{ data.serviceName }} v{{ data.serviceVersion }}</small>
       </div>
     </div>
   </div>
@@ -41,7 +41,9 @@ defineEmits(['updateNodeInternals'])
       <div class="icon">
         <el-icon><Bell /></el-icon>
       </div>
-      <div class="label">{{ data.eventName }}</div>
+      <div class="label" style="text-align: center">
+        <strong style="font-size: 0.8rem; line-height: 0.8rem">{{ data.eventName }}</strong>
+      </div>
     </div>
   </template>
   <Handle id="bottom" type="source" :position="props.sourcePosition || Position.Bottom" />

@@ -21,9 +21,14 @@ export const getUserById: Command = {
   restApi: {
     method: 'GET',
     path: 'users/:userId',
+    parameter: [],
+    tags: [],
+    errorCodes: [],
+    isProtected: true,
   },
   outputSchema: {
     type: 'object',
+    title: 'Signup user information',
     properties: {
       id: {
         type: 'string',
@@ -106,6 +111,5 @@ export const getUserById: Command = {
       },
     },
     required: ['id', 'firstName', 'lastName', 'gender', 'email', 'birthday', 'address', 'nationality'],
-    title: 'Signup user information',
   },
 }

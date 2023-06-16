@@ -5,7 +5,12 @@ import { useRouter } from 'vue-router'
 import { getSubscriptionId } from '@/helper'
 import { useStore } from '@/stores'
 
-const props = defineProps<{ serviceName: string; serviceVersion: string; subscriptionName: string }>()
+const props = defineProps<{
+  serviceName: string
+  serviceVersion: string
+  subscriptionName: string
+  projectId: string
+}>()
 
 const store = useStore()
 const router = useRouter()
@@ -77,7 +82,7 @@ const depsSubscriptions = computed(() => {
             <el-menu-item index="#it-invokes"
               ><template #title>
                 <el-icon><Switch /></el-icon>
-                <strong>Invokes Others</strong>
+                <strong>Invokes</strong>
               </template></el-menu-item
             >
             <el-menu-item index="#invoked-by"
@@ -186,7 +191,7 @@ const depsSubscriptions = computed(() => {
         </h4>
         <FlowBlock :id="graphId" />
         <div id="it-invokes" class="anchor"></div>
-        <h4>Invokes commands</h4>
+        <h4>Invokes</h4>
         <el-table
           :data="depsInvokes"
           style="width: 100%"

@@ -3,7 +3,7 @@ import type { Command } from '../../../types'
 export const userSignUp: Command = {
   name: 'userSignUp',
   eventName: 'new-user-registered',
-  description: 'A new user has been registered',
+  description: 'Registers a new user',
   markdown: `Even single commands can have some markdown content rendered, if they provide a _readme.md_.  
 Also here, we can have some code example:
 
@@ -19,7 +19,7 @@ graph LR
     B -->|collecting information| C(Calling REST-API /new)
 \`\`\`
 `,
-  restApi: { method: 'POST', path: 'signUp' },
+  restApi: { method: 'POST', path: 'signUp', parameter: [], tags: [], errorCodes: [], isProtected: false },
   invokes: [],
   publishesCustomEvents: [],
   inputSchema: {

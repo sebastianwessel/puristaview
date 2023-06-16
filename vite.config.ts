@@ -8,6 +8,11 @@ import { defineConfig } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  built: {
+    outDir: './doc',
+    emptyOutDir: true,
+  },
+  // publicDir: 'voyage-demo',
   plugins: [
     vue(),
     AutoImport({

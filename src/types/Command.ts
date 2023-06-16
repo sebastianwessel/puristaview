@@ -1,5 +1,7 @@
-import type { ContentType, EBMessageAddress, Prettify, SupportedHttpMethod } from '@purista/core'
+import type { EBMessageAddress, Prettify } from '@purista/core'
 import { OpenAPIV3 } from 'openapi-types'
+
+import type { Endpoint } from './Endpoint'
 
 export type Command = Prettify<{
   /** name of the command */
@@ -14,16 +16,8 @@ export type Command = Prettify<{
   parameterSchema?: OpenAPIV3.SchemaObject
   /** OpenAPI input schema */
   inputSchema?: OpenAPIV3.SchemaObject
-  /** indicate content type for input */
-  contentTypeInput?: ContentType
-  /** indicate encoding for input */
-  contentEncodingInput?: string
   /** OpenAPI output schema */
   outputSchema?: OpenAPIV3.SchemaObject
-  /** indicate content type for output */
-  contentTypeOutput?: ContentType
-  /** indicate encoding for output */
-  contentEncodingOutput?: string
   /** event name for output published as custom message */
   eventName?: string
   /** list if commands which are invked during subscription execution */
@@ -31,8 +25,5 @@ export type Command = Prettify<{
   /** List of possible custom events the subscription publishes during execution */
   publishesCustomEvents: CustomEvent[]
   /** command is exposed as REST-API endpoint */
-  restApi?: {
-    method: SupportedHttpMethod
-    path: string
-  }
+  restApi?: Omit<Endpoint, 'name' | 'description' | 'title' | 'serviceTarget'>
 }>

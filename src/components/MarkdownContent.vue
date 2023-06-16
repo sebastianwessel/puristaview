@@ -32,7 +32,10 @@ const renderer = new MarkdownIt({
   },
 })
 
-onMounted(() => mermaid.contentLoaded())
+onMounted(async () => {
+  await mermaid.init({ fontFamily: 'var(--font-family-code)', fontSize: 14 })
+  mermaid.contentLoaded()
+})
 
 onUpdated(() => mermaid.contentLoaded())
 

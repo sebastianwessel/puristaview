@@ -57,9 +57,7 @@ const computeGraph = () => {
   elkInstance
     .layout(elk)
     .then((graph) => {
-      // console.log(JSON.stringify(graph, null, 2))
       const update = (n: ElkNode, offX = 0, offY = 0, i = 0) => {
-        // console.log(i, n.id, JSON.stringify(n.labels))
         const x = (n.x || 0) + offX
         const y = (n.y || 0) + offY
         const nodeToUpdate = nodes.value.find((n2) => n2.id === n.id)

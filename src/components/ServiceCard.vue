@@ -23,7 +23,7 @@ const viewServiceVersion = (serviceName: string, serviceVersion: string) => {
 </script>
 
 <template>
-  <el-card shadow="hover" class="border-left-service flex-item">
+  <el-card shadow="hover" class="border-top-service flex-item" style="background-color: var(--el-fill-color-lighter)">
     <template #header>
       <div>{{ serviceName }}</div>
       <div class="subheadline">

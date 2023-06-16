@@ -23,10 +23,10 @@ const url = computed(() => `v${props.data.serviceVersion}/${props.data.path}`)
   <Handle id="top" type="target" :position="props.targetPosition || Position.Top" />
   <div class="wrapper">
     <div class="icon">
-      <el-icon><Link /></el-icon><strong>{{ data.method }}</strong>
+      <el-icon><Link /></el-icon><strong style="font-size: 0.8rem; line-height: 0.8rem">{{ data.method }}</strong>
     </div>
     <div class="label">
-      <strong>{{ url }}</strong>
+      <strong style="font-size: 0.8rem; line-height: 0.8rem">{{ url }}</strong>
     </div>
   </div>
   <Handle id="bottom" type="source" :position="props.sourcePosition || Position.Bottom" />

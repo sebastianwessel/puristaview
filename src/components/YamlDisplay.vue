@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { DocumentCopy } from '@element-plus/icons-vue'
 import { useClipboard } from '@vueuse/core'
-import { ElMessage } from 'element-plus'
+
 import { computed } from 'vue'
 import { stringify } from 'yaml'
 

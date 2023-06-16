@@ -2,15 +2,14 @@
 import { DocumentCopy } from '@element-plus/icons-vue'
 import { openapiSchemaToJsonSchema } from '@openapi-contrib/openapi-schema-to-json-schema'
 import { useClipboard } from '@vueuse/core'
-import { ElMessage } from 'element-plus'
+import type { OpenAPIV3 } from 'openapi-types'
 import { computed } from 'vue'
 
-import type { SchemaObject } from '@/helper/schemaObjectToTsType/types'
 import { logger } from '@/logger'
 
 import MarkdownContent from './MarkdownContent.vue'
 
-const props = defineProps<{ schema: SchemaObject }>()
+const props = defineProps<{ schema: OpenAPIV3.SchemaObject }>()
 
 const content = computed(() => JSON.stringify(openapiSchemaToJsonSchema(props.schema), null, 2))
 

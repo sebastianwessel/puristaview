@@ -1,71 +1,58 @@
 <script setup lang="ts">
-import { Bell, Grid, Link } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import { computed } from 'vue'
 
-import { useStore } from '@/stores'
+import { useProjects } from '@/stores'
 
-const store = useStore()
+const store = useProjects()
 
-const serviceCount = ref(store.servicesGroupedByName.length)
-const eventCount = ref(store.allEvents.length)
-const endpointCount = ref(store.allEndpoints.length)
+const projects = computed(() => store.projects)
 </script>
 
 <template>
-  <div class="content">
-    <img
-      src="/purista_voyage.svg"
-      alt="PURISTA -Voyage"
-      style="display: block; margin: auto; margin-bottom: 50px; margin-top: 50px"
-    />
-    <h1>Get the big picture of your distributed system</h1>
-    <p>
-      Gain a comprehensive understanding of your services and events, while visualizing the flow with event swimlanes!
-    </p>
+  <div class="bg">
+    <div class="content">
+      <img
+        src="/purista_voyage.png"
+        alt="PURISTA -Voyage"
+        style="display: block; margin: auto; margin-bottom: 20px; margin-top: 20px"
+      />
+      <h1>Get the big picture of your distributed system</h1>
+      <p>
+        Gain a comprehensive understanding of your services and events, while visualizing the flow with event swimlanes!
+      </p>
 
-    <h3 style="margin-top: 50px">Select your entry point</h3>
-    <div class="card-list">
-      <RouterLink :to="{ name: 'services' }" class="flex-item">
-        <el-card shadow="hover" class="border-top-service">
-          <template #header>
-            <el-icon><Grid /></el-icon> Services
-          </template>
-          <el-statistic :value="serviceCount" title="Available services"></el-statistic>
-          <p>
-            <small>Get an overview of all your services and the commands and subscriptions of every service.</small>
-          </p>
-        </el-card>
-      </RouterLink>
-      <RouterLink :to="{ name: 'events' }" class="flex-item">
-        <el-card header="Events" shadow="hover" class="border-top-event">
-          <template #header>
-            <el-icon><Bell /></el-icon> Events
-          </template>
-          <el-statistic :value="eventCount" title="Available events"></el-statistic>
-          <p>
-            <small>See the shape of events and discover who is publishing and who is consuming events</small>
-          </p>
-        </el-card>
-      </RouterLink>
-      <RouterLink :to="{ name: 'restApi' }" class="flex-item">
-        <el-card header="Rest-API" shadow="hover" class="border-top-rest-api">
-          <template #header>
-            <el-icon><Link /></el-icon> Rest-API
-          </template>
-          <el-statistic :value="endpointCount" title="Available endpoints"></el-statistic>
-          <p>
-            <small>Follow the flow when some endpoint gets called</small>
-          </p>
-        </el-card>
-      </RouterLink>
+      <h3 style="margin-top: 50px">Select your project</h3>
+      <div class="card-list">
+        <RouterLink
+          v-for="(project, index) of projects"
+          :key="index"
+          :to="{ name: 'projectInfo', params: { projectId: project.id } }"
+          class="flex-item"
+        >
+          <el-card shadow="hover" class="border-top-service" style="background-color: var(--el-fill-color-lighter)">
+            <template #header>
+              <div>
+                <strong style="margin-left: 5px; font-size: 1.2rem">{{ project.name }}</strong>
+              </div>
+            </template>
+            {{ project.description }}
+          </el-card>
+        </RouterLink>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
+.bg {
+  background-position: fixed;
+  background: linear-gradient(-60deg, #e3ffe7 0%, #d9e7ff 100%);
+  min-height: 100vh;
+}
+
 .content {
   text-align: center;
-  margin-top: 60px;
+  padding-top: 30px;
 }
 
 .el-statistic {
@@ -73,7 +60,7 @@ const endpointCount = ref(store.allEndpoints.length)
   font-weight: bold;
 }
 .card-list {
-  width: 1024px;
+  max-width: 80%;
   margin: auto;
   padding: 0px;
   display: flex;

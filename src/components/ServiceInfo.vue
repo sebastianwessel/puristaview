@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import { sort } from 'fast-sort'
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
 
 import MarkdownContent from '@/components/MarkdownContent.vue'
 import { useStore } from '@/stores'
+import type { Event } from '@/types'
+
+import ContentWithLeftSidebar from './ContentWithLeftSidebar.vue'
 
 const store = useStore()
 
-const router = useRouter()
-
-const props = defineProps<{ serviceName: string; serviceVersion: string }>()
+const props = defineProps<{ serviceName: string; serviceVersion: string; projectId: string }>()
 
 const service = computed(() => store.getServiceByNameAndVersion(props.serviceName, props.serviceVersion))
-
-const backToOverview = () => router.push({ name: 'services' })
 
 const markdownText = computed(() => service.value?.markdown)
 
@@ -38,7 +36,60 @@ const subscriptions = computed(() => {
   })
 })
 
-const events = computed(() => [])
+const events = computed(() => {
+  if (!service.value) {
+    return []
+  }
+
+  const consumedEvents: Record<string, unknown>[] = []
+  const publishedEvents: Record<string, unknown>[] = []
+
+  service.value.commands.forEach((command) => {
+    if (!command.eventName || !service.value) {
+      return
+    }
+
+    const event = {
+      name: command.eventName,
+      producer: {
+        name: command.name,
+        kind: 'command',
+      },
+    }
+
+    publishedEvents.push(event)
+  })
+
+  service.value.subscriptions.forEach((subscription) => {
+    if (!subscription.eventName || !service.value) {
+      return
+    }
+
+    const producer = {
+      name: subscription.name,
+      kind: 'subscription',
+    }
+
+    const event = {
+      name: subscription.eventName,
+      producer,
+    }
+    publishedEvents.push(event)
+
+    if (subscription.subscribesTo.eventname) {
+      const publishes = {
+        name: subscription.subscribesTo.eventname,
+        producer,
+      }
+      consumedEvents.push(publishes)
+    }
+  })
+
+  return [
+    ...publishedEvents.map((e) => ({ ...e, kind: 'publishes' })),
+    ...consumedEvents.map((e) => ({ ...e, kind: 'consumes' })),
+  ]
+})
 
 const endpoints = computed(() => {
   if (!service.value) {
@@ -65,18 +116,22 @@ const activeConfigTab = ref('tsTypes')
 
 <template>
   <template v-if="service">
-    <el-container>
-      <el-aside class="sidebar">
-        <div style="position: fixed">
-          <el-page-header title="Service overview" style="margin-left: 25px; margin-top: 60px" @back="backToOverview">
-          </el-page-header>
-
+    <ContentWithLeftSidebar>
+      <template #sidebar>
+        <div style="position: fixed; margin-top: 50px">
           <div
-            style="text-align: center; color: var(--service-color); font-size: 1.2rem; margin-top: var(--default-space)"
+            style="
+              text-align: left;
+              color: var(--command-color);
+              font-size: 1.2rem;
+              margin-left: var(--default-space);
+              margin-top: var(--default-space);
+              margin-bottom: var(--default-space);
+            "
           >
-            <strong>{{ serviceName }} v{{ serviceVersion }}</strong>
+            <strong>{{ service.name }}</strong>
           </div>
-          <el-menu style="border-right: none !important; width: 290px; --el-menu-bg-color: none" :router="true">
+          <el-menu style="border-right: none !important; width: 240px; --el-menu-bg-color: none" :router="true">
             <el-menu-item index="#general"
               ><template #title>
                 <el-icon><InfoFilled /></el-icon>
@@ -86,19 +141,19 @@ const activeConfigTab = ref('tsTypes')
             <el-menu-item index="#commands">
               <template #title>
                 <el-icon><Switch /></el-icon>
-                <strong>Commands</strong><small> ({{ commands.length }})</small>
+                <strong>Commands</strong><small>&nbsp;({{ commands.length }})</small>
               </template>
             </el-menu-item>
             <el-menu-item index="#subscriptions">
               <template #title>
                 <el-icon><Notification /></el-icon>
-                <strong>Subscriptions</strong><small> ({{ subscriptions.length }})</small>
+                <strong>Subscriptions</strong><small>&nbsp;({{ subscriptions.length }})</small>
               </template>
             </el-menu-item>
             <el-menu-item index="#events">
               <template #title>
                 <el-icon><Bell /></el-icon>
-                <strong>Events</strong><small> ({{ events.length }})</small>
+                <strong>Events</strong><small>&nbsp;({{ events.length }})</small>
               </template>
             </el-menu-item>
             <el-menu-item index="#rest-api">
@@ -119,11 +174,24 @@ const activeConfigTab = ref('tsTypes')
                 <strong>Custom Configuration</strong>
               </template>
             </el-menu-item>
+            <el-menu-item
+              index="#schema"
+              style="margin-top: 60px"
+              :route="{
+                name: 'services',
+                params: {
+                  projectId: projectId,
+                },
+              }"
+              ><template #title>
+                <el-icon><ArrowLeft /></el-icon>
+                <strong>Services</strong>
+              </template></el-menu-item
+            >
           </el-menu>
         </div>
-      </el-aside>
-
-      <el-main style="margin-top: var(--default-space); margin-bottom: 60px">
+      </template>
+      <template #content>
         <div id="general" class="anchor"></div>
         <div>
           <h2 style="margin-right: 5px">
@@ -154,7 +222,8 @@ const activeConfigTab = ref('tsTypes')
           style="width: 100%"
           :empty-text="'Service ' + service.name + ' has no commands'"
           stripe
-          :default-sort="{ prop: 'name', order: 'ascending' }"
+          :default-sort="{ prop: 'name', order: 'descending' }"
+          border
         >
           <el-table-column prop="name" label="Name" sortable>
             <template #default="scope">
@@ -167,7 +236,7 @@ const activeConfigTab = ref('tsTypes')
                     commandName: scope.row.name,
                   },
                 }"
-                style="text-decoration: none"
+                style="text-decoration: none; display: block"
                 ><strong>{{ scope.row.name }}</strong></RouterLink
               >
             </template>
@@ -189,7 +258,8 @@ const activeConfigTab = ref('tsTypes')
           style="width: 100%"
           :empty-text="'Service ' + service.name + ' has no subscriptions'"
           stripe
-          :default-sort="{ prop: 'name', order: 'ascending' }"
+          :default-sort="{ prop: 'name', order: 'descending' }"
+          border
         >
           <el-table-column prop="name" label="Name" sortable>
             <template #default="scope">
@@ -202,7 +272,7 @@ const activeConfigTab = ref('tsTypes')
                     subscriptionName: scope.row.name,
                   },
                 }"
-                style="text-decoration: none"
+                style="text-decoration: none; display: block"
                 ><strong>{{ scope.row.name }}</strong></RouterLink
               >
             </template>
@@ -231,15 +301,47 @@ const activeConfigTab = ref('tsTypes')
           style="width: 100%"
           :empty-text="'Service ' + service.name + ' has no events'"
           stripe
-          :default-sort="{ prop: 'name', order: 'ascending' }"
+          :default-sort="{ prop: 'name', order: 'descending' }"
+          border
         >
-          <el-table-column prop="kind" sortable />
-          <el-table-column prop="name" label="Name" sortable />
-          <el-table-column prop="eventName" label="Emits" width="300" sortable>
+          <el-table-column prop="kind" sortable width="120" />
+          <el-table-column prop="name" width="300" sortable>
             <template #default="scope">
-              <el-tag v-if="scope.row.eventName" size="large" type="success" effect="dark">{{
-                scope.row.eventName
-              }}</el-tag>
+              <el-tag
+                v-if="scope.row.name"
+                size="large"
+                :type="scope.row.kind === 'publishes' ? 'success' : ''"
+                effect="dark"
+                >{{ scope.row.name }}</el-tag
+              >
+            </template>
+          </el-table-column>
+          <el-table-column prop="producer.kind" sortable width="140" />
+          <el-table-column prop="producer.name" sortable>
+            <template #default="scope">
+              <RouterLink
+                :to="
+                  scope.row.producer.kind === 'subscription'
+                    ? {
+                        name: 'subscriptionInfo',
+                        params: {
+                          serviceName: service.name,
+                          serviceVersion: service.version,
+                          subscriptionName: scope.row.producer.name,
+                        },
+                      }
+                    : {
+                        name: 'commandInfo',
+                        params: {
+                          serviceName: service.name,
+                          serviceVersion: service.version,
+                          commandName: scope.row.producer.name,
+                        },
+                      }
+                "
+                style="text-decoration: none; display: block"
+                ><strong>{{ scope.row.producer.name }}</strong></RouterLink
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -253,6 +355,7 @@ const activeConfigTab = ref('tsTypes')
           :empty-text="'Service ' + service.name + ' has no REST-API endpoints'"
           stripe
           :default-sort="{ prop: 'path', order: 'descending' }"
+          border
         >
           <el-table-column prop="method" label="Name" width="120" sortable />
           <el-table-column prop="path" label="Path" sortable />
@@ -267,7 +370,7 @@ const activeConfigTab = ref('tsTypes')
                     commandName: scope.row.commandName,
                   },
                 }"
-                style="text-decoration: none"
+                style="text-decoration: none; display: block"
                 ><strong>{{ scope.row.commandName }}</strong></RouterLink
               >
             </template>
@@ -300,8 +403,8 @@ const activeConfigTab = ref('tsTypes')
         <p v-else>This service has not custom configuration.</p>
 
         <el-backtop :right="100" :bottom="100" />
-      </el-main>
-    </el-container>
+      </template>
+    </ContentWithLeftSidebar>
   </template>
   <template v-else> Service not found </template>
 </template>

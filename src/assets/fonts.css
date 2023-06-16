@@ -1,0 +1,25 @@
+
+
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: italic;
+  src: url(./RobotoMono-Italic-VariableFont_wght.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  src: url(./RobotoMono-VariableFont_wght.ttf) format('truetype');
+}
+
+
+@font-face {
+  font-family: 'Sofia Sans';
+  font-style: italic;
+  src: url(./SofiaSans-Italic-VariableFont_wght.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Sofia Sans';
+  src: url(./SofiaSans-VariableFont_wght.ttf) format('truetype');
+}
+

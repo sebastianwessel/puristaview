@@ -1,4 +1,3 @@
-import { getUniqueId } from '@purista/core'
 import { type Edge, MarkerType, type Node as FlowNode } from '@vue-flow/core'
 import { type ElkNode } from 'elkjs'
 
@@ -6,6 +5,11 @@ import { getCommandId, getEndpointId, getSubscriptionId } from '@/helper'
 import { logger } from '@/logger'
 import { useStore } from '@/stores'
 import { type Command, EdgeLabel, isCommand, isEndpoint, isSubscription, NodeType } from '@/types'
+
+function getUniqueId(): string {
+  const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0]
+  return uint32.toString(16)
+}
 
 export const useDependencyGraph = () => {
   const store = useStore()

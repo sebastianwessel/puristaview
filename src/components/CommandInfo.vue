@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
 
 import { getCommandId } from '@/helper'
 import { useStore } from '@/stores'
@@ -11,13 +10,9 @@ import MarkdownContent from './MarkdownContent.vue'
 import TypeDisplay from './TypeDisplay.vue'
 import YamlDisplay from './YamlDisplay.vue'
 
-const props = defineProps<{ serviceName: string; serviceVersion: string; commandName: string }>()
+const props = defineProps<{ serviceName: string; serviceVersion: string; commandName: string; projectId: string }>()
 
 const store = useStore()
-const router = useRouter()
-
-const backToService = () =>
-  router.push({ name: 'serviceInfo', params: { serviceName: props.serviceName, serviceVersion: props.serviceVersion } })
 
 const command = computed(() =>
   store.getCommandByServiceAndName(props.serviceName, props.serviceVersion, props.commandName),
@@ -48,22 +43,21 @@ const depsSubscriptions = computed(() => {
 
 <template>
   <template v-if="command">
-    <el-container>
-      <el-aside class="sidebar">
-        <div style="position: fixed">
-          <el-page-header
-            :title="props.serviceName + ' v' + props.serviceVersion"
-            style="margin-left: 25px; margin-top: 60px"
-            @back="backToService"
-          >
-          </el-page-header>
-
+    <ContentWithLeftSidebar>
+      <template #sidebar>
+        <div style="position: fixed; margin-top: 50px">
           <div
-            style="text-align: center; color: var(--command-color); font-size: 1.2rem; margin-top: var(--default-space)"
+            style="
+              color: var(--command-color);
+              font-size: 1.2rem;
+              margin-top: var(--default-space);
+              margin-left: var(--default-space);
+              margin-bottom: var(--default-space);
+            "
           >
             <strong>{{ commandName }}</strong>
           </div>
-          <el-menu style="border-right: none !important; width: 290px; --el-menu-bg-color: none" :router="true">
+          <el-menu style="border-right: none !important; width: 240px; --el-menu-bg-color: none" :router="true">
             <el-menu-item index="#general"
               ><template #title>
                 <el-icon><InfoFilled /></el-icon>
@@ -79,7 +73,7 @@ const depsSubscriptions = computed(() => {
             <el-menu-item index="#it-invokes"
               ><template #title>
                 <el-icon><Switch /></el-icon>
-                <strong>Invokes Others</strong>
+                <strong>Invokes</strong>
               </template></el-menu-item
             >
             <el-menu-item index="#invoked-by"
@@ -100,11 +94,26 @@ const depsSubscriptions = computed(() => {
                 <strong>In-/Output Schema</strong>
               </template></el-menu-item
             >
+            <el-menu-item
+              index="#schema"
+              style="margin-top: 60px"
+              :route="{
+                name: 'serviceInfo',
+                params: {
+                  serviceName: serviceName,
+                  serviceVersion: serviceVersion,
+                  projectId: projectId,
+                },
+              }"
+              ><template #title>
+                <el-icon><ArrowLeft /></el-icon>
+                <strong>{{ props.serviceName + ' v' + props.serviceVersion }}</strong>
+              </template></el-menu-item
+            >
           </el-menu>
         </div>
-      </el-aside>
-
-      <el-main style="margin-top: var(--default-space);!important; margin-bottom: 60px;scroll-margin-top: 300px;">
+      </template>
+      <template #content>
         <div id="general" class="anchor"></div>
         <div>
           <h2 style="margin-right: 5px; flex-grow: 1">
@@ -120,7 +129,7 @@ const depsSubscriptions = computed(() => {
           </h2>
         </div>
 
-        <div style="color: var(--el-text-color-secondary); margin-top: 5px">{{ command?.description || '' }}</div>
+        <div style="color: var(--el-text-color-secondary)">{{ command?.description || '' }}</div>
         <el-divider />
 
         <div style="margin-bottom: var(--default-space); margin-top: var(--default-space)">
@@ -154,15 +163,16 @@ const depsSubscriptions = computed(() => {
         </h4>
         <FlowBlock :id="graphId" />
         <div id="it-invokes" class="anchor"></div>
-        <h4>Invokes commands</h4>
+        <h4>Invokes</h4>
         <el-table
           :data="depsInvokes"
           style="width: 100%"
           :empty-text="'Command ' + commandName + ' does not invoke other known commands'"
           stripe
+          border
         >
           <el-table-column prop="serviceName" label="Service" width="320" sortable />
-          <el-table-column prop="serviceVersion" label="Version" width="100" sortable />
+          <el-table-column prop="serviceVersion" label="Version" width="120" sortable />
           <el-table-column prop="serviceTarget" label="Name" sortable />
         </el-table>
 
@@ -173,10 +183,11 @@ const depsSubscriptions = computed(() => {
           style="width: 100%"
           :empty-text="'Command ' + commandName + ' is not invoked by known commands or subscriptions'"
           stripe
+          border
         >
-          <el-table-column prop="graphNodeType" label="Type" width="120" style="border-left: 5px solid" />
+          <el-table-column prop="graphNodeType" label="Type" width="140" style="border-left: 5px solid" sortable />
           <el-table-column prop="serviceName" label="Service" width="200" sortable />
-          <el-table-column prop="serviceVersion" label="Version" width="100" sortable>
+          <el-table-column prop="serviceVersion" label="Version" width="120" sortable>
             <template #default="scope"
               ><RouterLink
                 :to="{
@@ -186,7 +197,7 @@ const depsSubscriptions = computed(() => {
                     serviceVersion: scope.row.serviceVersion,
                   },
                 }"
-                style="text-decoration: none"
+                style="text-decoration: none; display: block; text-align: right"
                 ><strong>{{ scope.row.serviceVersion }}</strong></RouterLink
               >
             </template>
@@ -202,7 +213,7 @@ const depsSubscriptions = computed(() => {
                     [scope.row.graphNodeType + 'Name']: scope.row.name,
                   },
                 }"
-                style="text-decoration: none"
+                style="text-decoration: none; display: block"
                 ><strong>{{ scope.row.name }}</strong></RouterLink
               >
             </template>
@@ -216,10 +227,11 @@ const depsSubscriptions = computed(() => {
           style="width: 100%"
           :empty-text="'Success result of command ' + commandName + ' is not consumed by any known subscription'"
           stripe
+          border
         >
-          <el-table-column prop="graphNodeType" label="Type" width="120" />
-          <el-table-column prop="serviceName" label="Service" width="200"></el-table-column>
-          <el-table-column prop="serviceVersion" label="Version" width="100">
+          <el-table-column prop="graphNodeType" label="Type" width="140" sortable />
+          <el-table-column prop="serviceName" label="Service" width="200" sortable />
+          <el-table-column prop="serviceVersion" label="Version" width="120" sortable>
             <template #default="scope"
               ><RouterLink
                 :to="{
@@ -229,12 +241,12 @@ const depsSubscriptions = computed(() => {
                     serviceVersion: scope.row.serviceVersion,
                   },
                 }"
-                style="text-decoration: none"
+                style="text-decoration: none; display: block; text-align: right"
                 ><strong>{{ scope.row.serviceVersion }}</strong></RouterLink
               >
             </template>
           </el-table-column>
-          <el-table-column prop="name" label="Name">
+          <el-table-column prop="name" label="Name" sortable>
             <template #default="scope">
               <RouterLink
                 :to="{
@@ -245,7 +257,7 @@ const depsSubscriptions = computed(() => {
                     [scope.row.graphNodeType + 'Name']: scope.row.name,
                   },
                 }"
-                style="text-decoration: none"
+                style="text-decoration: none; display: block"
                 ><strong>{{ scope.row.name }}</strong></RouterLink
               >
             </template>
@@ -291,8 +303,8 @@ const depsSubscriptions = computed(() => {
             </el-tab-pane>
           </el-tabs>
         </template>
-      </el-main>
-    </el-container>
+      </template>
+    </ContentWithLeftSidebar>
   </template>
   <template v-else> Command not found </template>
 </template>

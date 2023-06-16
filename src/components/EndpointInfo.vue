@@ -3,7 +3,7 @@ import { computed } from 'vue'
 
 import { useStore } from '@/stores'
 
-const props = defineProps<{ serviceName: string; serviceVersion: string; endpointName: string }>()
+const props = defineProps<{ serviceName: string; serviceVersion: string; endpointName: string; projectId: string }>()
 
 const store = useStore()
 
