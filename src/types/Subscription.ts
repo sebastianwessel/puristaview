@@ -2,12 +2,13 @@ import type {
   ContentType,
   DefinitionEventBridgeConfig,
   EBMessageAddress,
-  EBMessageType,
   InstanceId,
   Prettify,
   PrincipalId,
 } from '@purista/core'
 import { OpenAPIV3 } from 'openapi-types'
+
+import { EBMessageType } from './EBMessageType.enum'
 
 export type CustomEvent = {
   eventName: string
