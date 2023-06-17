@@ -1,0 +1,1 @@
+import{d as e,o as r,b as o,u as s,cq as a}from"./index-15c7c175.js";const p=e({__name:"ServiceVersionView",props:{serviceName:{},serviceVersion:{}},setup(c){return(n,t)=>(r(),o(s(a)))}});export{p as default};

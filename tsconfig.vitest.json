@@ -4,6 +4,6 @@
   "compilerOptions": {
     "composite": true,
     "lib": [],
-    "types": ["node", "jsdom","./components.d.ts"]
+    "types": ["node", "jsdom","./components.d.ts","./locale.d.ts"]
   }
 }

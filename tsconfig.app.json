@@ -8,6 +8,6 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["./components.d.ts"]
+    "types": ["./components.d.ts","./locale.d.ts"]
   }
 }

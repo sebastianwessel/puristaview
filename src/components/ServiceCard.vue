@@ -25,7 +25,9 @@ const viewServiceVersion = (serviceName: string, serviceVersion: string) => {
 <template>
   <el-card shadow="hover" class="border-top-service flex-item" style="background-color: var(--el-fill-color-lighter)">
     <template #header>
-      <div>{{ serviceName }}</div>
+      <div>
+        <h3 style="margin: 0px; margin-bottom: var(--default-space)">{{ serviceName }}</h3>
+      </div>
       <div class="subheadline">
         <small>{{ serviceDescription }}</small>
       </div>
@@ -37,7 +39,10 @@ const viewServiceVersion = (serviceName: string, serviceVersion: string) => {
           :type="index > 0 ? 'default' : 'primary'"
           @click="viewServiceVersion(service.name, service.version)"
         >
-          version {{ service.version }}
+          version {{ service.version
+          }}<el-tag v-if="service.deprecated" effect="plain" type="danger" size="small" style="margin-left: 5px"
+            >deprecated</el-tag
+          >
         </el-button>
       </li>
     </ul>
