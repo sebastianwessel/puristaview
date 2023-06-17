@@ -39,6 +39,11 @@ Sentry.init({
     }),
     new Sentry.Replay(),
   ],
+  tracingOptions: {
+    trackComponents: true,
+    timeout: 500,
+    hooks: ['mount', 'update'],
+  },
 
   // Set tracesSampleRate to 1.0 to capture 100%
   // of transactions for performance monitoring.

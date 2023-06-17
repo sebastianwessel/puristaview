@@ -1,0 +1,1 @@
+import{_ as e}from"./_plugin-vue_export-helper-c27b6911.js";import{o as t,e as o,g as s}from"./index-6e715107.js";const c={},n={style:{margin:"auto","margin-top":"20%"}},r=s("h1",{style:{"text-align":"center"}},"SOON 🤫",-1),a=[r];function _(i,d){return t(),o("div",n,a)}const l=e(c,[["render",_]]);export{l as default};
