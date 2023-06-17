@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ArrowLeft, InfoFilled, Notification, Share, Switch } from '@element-plus/icons-vue'
 import { computed, ref } from 'vue'
 
 import { getCommandId } from '@/helper'

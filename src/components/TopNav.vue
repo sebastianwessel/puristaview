@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Compass, ScaleToOriginal } from '@element-plus/icons-vue'
+import { CaretLeft, Compass, Link, ScaleToOriginal, TopRight } from '@element-plus/icons-vue'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 

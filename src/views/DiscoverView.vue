@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Bell, Grid, Link } from '@element-plus/icons-vue'
+import { InfoFilled, Share } from '@element-plus/icons-vue'
 import { computed } from 'vue'
 
 import ContentWithLeftSidebar from '@/components/ContentWithLeftSidebar.vue'

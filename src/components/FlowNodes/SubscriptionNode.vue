@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Bell, Notification } from '@element-plus/icons-vue'
+import { Bell, Notification } from '@element-plus/icons-vue'
 import type { NodeProps } from '@vue-flow/core'
 import { Handle, Position } from '@vue-flow/core'
 
