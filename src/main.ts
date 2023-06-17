@@ -30,7 +30,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 
 Sentry.init({
   app,
-  dsn: 'https://examplePublicKey@o0.ingest.sentry.io/0',
+  dsn: 'https://00d2b7fbcf94450a9ffa901d31f76001@o4505376113033216.ingest.sentry.io/4505376116375552',
   integrations: [
     new Sentry.BrowserTracing({
       // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
