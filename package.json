@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check build-only",
+    "build": "run-p type-check build-only && cp ./docs/index.html ./docs/404.html",
     "preview": "vite preview",
     "test:unit": "vitest",
     "build-only": "vite build",
