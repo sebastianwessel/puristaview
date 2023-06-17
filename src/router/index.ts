@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import { useLoading } from '@/composeables/useLoading'
+
 const CommandInfo = () => import('@/components/CommandInfo.vue')
 const ServiceInfo = () => import('@/components/ServiceInfo.vue')
 const SubscriptionInfo = () => import('@/components/SubscriptionInfo.vue')
@@ -13,6 +15,7 @@ const ProjectView = () => import('@/views/ProjectView.vue')
 const RestApiView = () => import('@/views/RestApiView.vue')
 const ServicesView = () => import('@/views/ServicesView.vue')
 const ServiceVersionView = () => import('@/views/ServiceVersionView.vue')
+const OpenApiView = () => import('@/views/OpenApiView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,6 +71,25 @@ const router = createRouter({
                   component: ServicesView,
                 },
                 {
+                  path: 'events',
+                  name: 'events',
+                  props: true,
+                  component: EventsView,
+                },
+                {
+                  path: 'rest-api',
+                  name: 'restApi',
+                  component: RestApiView,
+                  children: [
+                    {
+                      name: 'endpointInfo',
+                      path: 'endpointName',
+                      props: true,
+                      component: SubscriptionInfo,
+                    },
+                  ],
+                },
+                {
                   path: 'lanes',
                   name: 'lanes',
                   props: true,
@@ -101,30 +123,27 @@ const router = createRouter({
                 },
               ],
             },
+
             {
-              path: 'events',
-              name: 'events',
-              props: true,
-              component: EventsView,
-            },
-            {
-              path: 'rest-api',
-              name: 'restApi',
-              component: RestApiView,
-              children: [
-                {
-                  name: 'endpointInfo',
-                  path: 'endpointName',
-                  props: true,
-                  component: SubscriptionInfo,
-                },
-              ],
+              path: 'open-api',
+              name: 'openApi',
+              component: OpenApiView,
             },
           ],
         },
       ],
     },
   ],
+})
+
+router.beforeEach(() => {
+  const { isLoading } = useLoading()
+  isLoading.value = true
+})
+
+router.afterEach(() => {
+  const { isLoading } = useLoading()
+  isLoading.value = false
 })
 
 export default router

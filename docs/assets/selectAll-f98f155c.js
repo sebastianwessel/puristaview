@@ -1,0 +1,1 @@
+import{ac as t,ad as n,ae as o}from"./MarkdownContent.vue_vue_type_script_setup_true_lang-f04bfc2f.js";function r(e){return typeof e=="string"?new t([document.querySelectorAll(e)],[document.documentElement]):new t([o(e)],n)}export{r as s};

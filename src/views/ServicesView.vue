@@ -23,7 +23,7 @@ const services = computed(() => {
 
 <template>
   <div>
-    <h2 style="margin-right: 5px; flex-grow: 1">Services</h2>
+    <h2 style="margin-right: 5px; flex-grow: 1; margin-top: 0px">Services</h2>
   </div>
 
   <div style="color: var(--el-text-color-secondary)">
@@ -39,7 +39,7 @@ const services = computed(() => {
 <style scoped lang="scss">
 .content {
   text-align: center;
-  margin-top: 60px;
+  margin-top: var(--top-bar-height);
 }
 
 .el-statistic {

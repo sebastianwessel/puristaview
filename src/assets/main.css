@@ -17,6 +17,8 @@
   --font-family-code:  'Roboto Mono', Consolas, monaco, monospace;
   --el-font-size-base: 14px;
   --default-font-size: 14px;
+
+  --top-bar-height: 65px;
 }
 
 code, .mermaid, .el-tag {

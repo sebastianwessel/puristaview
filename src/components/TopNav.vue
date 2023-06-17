@@ -3,9 +3,12 @@ import { CaretLeft, Compass, Link, ScaleToOriginal, TopRight } from '@element-pl
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
+import { useLoading } from '@/composeables/useLoading'
+
 const _props = defineProps<{ projectId?: string }>()
 
 const route = useRoute()
+const { isLoading } = useLoading()
 
 const active = computed(() => {
   const part = route.path.split('/')
@@ -26,6 +29,7 @@ const active = computed(() => {
 </script>
 
 <template>
+  <div class="loading-bar" :class="isLoading ? 'is-loading' : ''" />
   <div style="display: flex">
     <el-menu :default-active="active" mode="horizontal" :router="true" :ellipsis="false">
       <el-menu-item index="0" :route="{ name: 'projects' }"
@@ -44,7 +48,7 @@ const active = computed(() => {
       <el-menu-item index="2" :route="{ name: 'lanes', params: { projectId } }"
         ><el-icon><ScaleToOriginal /></el-icon>Lanes</el-menu-item
       >
-      <el-menu-item index="4" :route="{ name: 'restApi', params: { projectId } }"
+      <el-menu-item index="4" :route="{ name: 'openApi', params: { projectId } }"
         ><el-icon><Link /></el-icon>OpenAPI</el-menu-item
       >
     </el-menu>
@@ -56,3 +60,29 @@ const active = computed(() => {
     </el-menu>
   </div>
 </template>
+
+<style lang="scss">
+.loading-bar {
+  height: 5px;
+  width: 100%;
+  background-color: var(--el-menu-bg-color);
+
+  .is-loading {
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: placeHolderShimmer;
+    animation-timing-function: linear;
+    background: linear-gradient(to right, #e6a23c 0%, #409eff 50%, #e6a23c 100%);
+  }
+}
+
+@keyframes placeHolderShimmer {
+  0% {
+    background-position: 0px 0;
+  }
+  100% {
+    background-position: 100vw 0;
+  }
+}
+</style>

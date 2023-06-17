@@ -52,7 +52,7 @@ const depsSubscriptions = computed(() => {
         <div style="position: fixed">
           <el-page-header
             :title="props.serviceName + ' v' + props.serviceVersion"
-            style="margin-left: 25px; margin-top: 60px"
+            style="margin-left: 25px; margin-top: var(--top-bar-height)"
             @back="backToService"
           >
           </el-page-header>
@@ -108,10 +108,12 @@ const depsSubscriptions = computed(() => {
         </div>
       </el-aside>
 
-      <el-main style="margin-top: var(--default-space);!important; margin-bottom: 60px;scroll-margin-top: 300px;">
+      <el-main
+        style="margin-top: var(--default-space);!important; margin-bottom: var(--top-bar-height);scroll-margin-top: 300px;"
+      >
         <div id="general" class="anchor"></div>
         <div>
-          <h2 style="margin-right: 5px; flex-grow: 1">
+          <h2 style="margin-right: 5px; flex-grow: 1; margin-top: 0px">
             Subscription {{ props.subscriptionName }}
             <el-tag
               v-if="subscription.deprecated"
@@ -198,9 +200,11 @@ const depsSubscriptions = computed(() => {
           style="width: 100%"
           :empty-text="'Subscription ' + subscriptionName + ' does not invoke other known subscriptions'"
           stripe
+          table-layout="auto"
+          :flexible="true"
         >
-          <el-table-column prop="serviceName" label="Service" width="320" sortable />
-          <el-table-column prop="serviceVersion" label="Version" width="100" sortable>
+          <el-table-column prop="serviceName" label="Service" sortable />
+          <el-table-column prop="serviceVersion" label="Version" sortable>
             <template #default="scope"
               ><RouterLink
                 :to="{
@@ -240,10 +244,12 @@ const depsSubscriptions = computed(() => {
           style="width: 100%"
           :empty-text="'Subscription ' + subscriptionName + ' is not invoked by known subscriptions or subscriptions'"
           stripe
+          table-layout="auto"
+          :flexible="true"
         >
-          <el-table-column prop="graphNodeType" label="Type" width="120" style="border-left: 5px solid" />
-          <el-table-column prop="serviceName" label="Service" width="200" sortable />
-          <el-table-column prop="serviceVersion" label="Version" width="100" sortable>
+          <el-table-column prop="graphNodeType" label="Type" style="border-left: 5px solid" />
+          <el-table-column prop="serviceName" label="Service" sortable />
+          <el-table-column prop="serviceVersion" label="Version" sortable>
             <template #default="scope"
               ><RouterLink
                 :to="{
@@ -308,10 +314,12 @@ const depsSubscriptions = computed(() => {
             'Success result of subscription ' + subscriptionName + ' is not consumed by any known subscription'
           "
           stripe
+          table-layout="auto"
+          :flexible="true"
         >
-          <el-table-column prop="graphNodeType" label="Type" width="120" />
-          <el-table-column prop="serviceName" label="Service" width="200"></el-table-column>
-          <el-table-column prop="serviceVersion" label="Version" width="100">
+          <el-table-column prop="graphNodeType" label="Type" />
+          <el-table-column prop="serviceName" label="Service"></el-table-column>
+          <el-table-column prop="serviceVersion" label="Version">
             <template #default="scope"
               ><RouterLink
                 :to="{

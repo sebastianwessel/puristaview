@@ -46,7 +46,7 @@ const depsSubscriptions = computed(() => {
   <template v-if="command">
     <ContentWithLeftSidebar>
       <template #sidebar>
-        <div style="position: fixed; margin-top: 50px">
+        <div style="position: fixed; margin-top: var(--top-bar-height)">
           <div
             style="
               color: var(--command-color);
@@ -97,7 +97,7 @@ const depsSubscriptions = computed(() => {
             >
             <el-menu-item
               index="#schema"
-              style="margin-top: 60px"
+              style="margin-top: var(--top-bar-height)"
               :route="{
                 name: 'serviceInfo',
                 params: {
@@ -117,7 +117,7 @@ const depsSubscriptions = computed(() => {
       <template #content>
         <div id="general" class="anchor"></div>
         <div>
-          <h2 style="margin-right: 5px; flex-grow: 1">
+          <h2 style="margin-right: 5px; flex-grow: 1; margin-top: 0px">
             Command {{ props.commandName }}
             <el-tag
               v-if="command.deprecated"
@@ -171,9 +171,11 @@ const depsSubscriptions = computed(() => {
           :empty-text="'Command ' + commandName + ' does not invoke other known commands'"
           stripe
           border
+          table-layout="auto"
+          :flexible="true"
         >
-          <el-table-column prop="serviceName" label="Service" width="320" sortable />
-          <el-table-column prop="serviceVersion" label="Version" width="120" sortable />
+          <el-table-column prop="serviceName" label="Service" sortable />
+          <el-table-column prop="serviceVersion" label="Version" sortable />
           <el-table-column prop="serviceTarget" label="Name" sortable />
         </el-table>
 
@@ -185,10 +187,12 @@ const depsSubscriptions = computed(() => {
           :empty-text="'Command ' + commandName + ' is not invoked by known commands or subscriptions'"
           stripe
           border
+          table-layout="auto"
+          :flexible="true"
         >
-          <el-table-column prop="graphNodeType" label="Type" width="140" style="border-left: 5px solid" sortable />
-          <el-table-column prop="serviceName" label="Service" width="200" sortable />
-          <el-table-column prop="serviceVersion" label="Version" width="120" sortable>
+          <el-table-column prop="graphNodeType" label="Type" style="border-left: 5px solid" sortable />
+          <el-table-column prop="serviceName" label="Service" sortable />
+          <el-table-column prop="serviceVersion" label="Version" sortable>
             <template #default="scope"
               ><RouterLink
                 :to="{
@@ -229,10 +233,12 @@ const depsSubscriptions = computed(() => {
           :empty-text="'Success result of command ' + commandName + ' is not consumed by any known subscription'"
           stripe
           border
+          table-layout="auto"
+          :flexible="true"
         >
-          <el-table-column prop="graphNodeType" label="Type" width="140" sortable />
-          <el-table-column prop="serviceName" label="Service" width="200" sortable />
-          <el-table-column prop="serviceVersion" label="Version" width="120" sortable>
+          <el-table-column prop="graphNodeType" label="Type" sortable />
+          <el-table-column prop="serviceName" label="Service" sortable />
+          <el-table-column prop="serviceVersion" label="Version" sortable>
             <template #default="scope"
               ><RouterLink
                 :to="{

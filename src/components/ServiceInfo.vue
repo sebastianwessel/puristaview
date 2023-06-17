@@ -5,7 +5,6 @@ import { computed, ref } from 'vue'
 
 import MarkdownContent from '@/components/MarkdownContent.vue'
 import { useStore } from '@/stores'
-import type { Event } from '@/types'
 
 import ContentWithLeftSidebar from './ContentWithLeftSidebar.vue'
 
@@ -87,8 +86,8 @@ const events = computed(() => {
   })
 
   return [
-    ...publishedEvents.map((e) => ({ ...e, kind: 'publishes' })),
-    ...consumedEvents.map((e) => ({ ...e, kind: 'consumes' })),
+    ...publishedEvents.map((e) => ({ ...e, kind: 'publish' })),
+    ...consumedEvents.map((e) => ({ ...e, kind: 'consume' })),
   ]
 })
 
@@ -119,7 +118,7 @@ const activeConfigTab = ref('tsTypes')
   <template v-if="service">
     <ContentWithLeftSidebar>
       <template #sidebar>
-        <div style="position: fixed; margin-top: 50px">
+        <div style="position: fixed; margin-top: var(--top-bar-height)">
           <div
             style="
               text-align: left;
@@ -225,6 +224,8 @@ const activeConfigTab = ref('tsTypes')
           stripe
           :default-sort="{ prop: 'name', order: 'descending' }"
           border
+          table-layout="auto"
+          :flexible="true"
         >
           <el-table-column prop="name" label="Name" sortable>
             <template #default="scope">
@@ -242,7 +243,7 @@ const activeConfigTab = ref('tsTypes')
               >
             </template>
           </el-table-column>
-          <el-table-column prop="eventName" label="Emits" width="300" sortable>
+          <el-table-column prop="eventName" label="Emits" sortable>
             <template #default="scope">
               <el-tag v-if="scope.row.eventName" size="large" type="success" effect="dark">{{
                 scope.row.eventName
@@ -261,6 +262,8 @@ const activeConfigTab = ref('tsTypes')
           stripe
           :default-sort="{ prop: 'name', order: 'descending' }"
           border
+          table-layout="auto"
+          :flexible="true"
         >
           <el-table-column prop="name" label="Name" sortable>
             <template #default="scope">
@@ -278,14 +281,14 @@ const activeConfigTab = ref('tsTypes')
               >
             </template>
           </el-table-column>
-          <el-table-column prop="subscribesTo.eventName" label="Subscribes" width="300" sortable>
+          <el-table-column prop="subscribesTo.eventName" label="Subscribes" sortable>
             <template #default="scope">
               <el-tag v-if="scope.row.subscribesTo.eventName" size="large" type="success" effect="dark">{{
                 scope.row.subscribesTo.eventName
               }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="eventName" label="Emits" width="300" sortable>
+          <el-table-column prop="eventName" label="Emits" sortable>
             <template #default="scope">
               <el-tag v-if="scope.row.eventName" size="large" type="success" effect="dark">{{
                 scope.row.eventName
@@ -304,21 +307,23 @@ const activeConfigTab = ref('tsTypes')
           stripe
           :default-sort="{ prop: 'name', order: 'descending' }"
           border
+          table-layout="auto"
+          :flexible="true"
         >
-          <el-table-column prop="kind" sortable width="120" />
-          <el-table-column prop="name" width="300" sortable>
+          <el-table-column prop="kind" label="Kind" sortable />
+          <el-table-column prop="name" label="Event" sortable>
             <template #default="scope">
               <el-tag
                 v-if="scope.row.name"
                 size="large"
-                :type="scope.row.kind === 'publishes' ? 'success' : ''"
+                :type="scope.row.kind === 'publish' ? 'success' : ''"
                 effect="dark"
                 >{{ scope.row.name }}</el-tag
               >
             </template>
           </el-table-column>
-          <el-table-column prop="producer.kind" sortable width="140" />
-          <el-table-column prop="producer.name" sortable>
+          <el-table-column prop="producer.kind" label="Type" sortable />
+          <el-table-column prop="producer.name" label="Name" sortable>
             <template #default="scope">
               <RouterLink
                 :to="
@@ -357,10 +362,12 @@ const activeConfigTab = ref('tsTypes')
           stripe
           :default-sort="{ prop: 'path', order: 'descending' }"
           border
+          table-layout="auto"
+          :flexible="true"
         >
-          <el-table-column prop="method" label="Name" width="120" sortable />
+          <el-table-column prop="method" label="Name" sortable />
           <el-table-column prop="path" label="Path" sortable />
-          <el-table-column prop="commandName" label="Invokes" width="300" sortable>
+          <el-table-column prop="commandName" label="Invokes" sortable>
             <template #default="scope">
               <RouterLink
                 :to="{

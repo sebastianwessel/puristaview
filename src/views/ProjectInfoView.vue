@@ -20,7 +20,7 @@ const project = computed(() => projects.activeProject)
 <template>
   <template v-if="project">
     <div>
-      <h2 style="margin-right: 5px; flex-grow: 1">Command {{ project.name }}</h2>
+      <h2 style="margin-right: 5px; flex-grow: 1; margin-top: 0px">Command {{ project.name }}</h2>
     </div>
 
     <div style="color: var(--el-text-color-secondary)">{{ project.description || '' }}</div>
@@ -93,7 +93,7 @@ const project = computed(() => projects.activeProject)
 <style scoped lang="scss">
 .content {
   text-align: center;
-  margin-top: 60px;
+  margin-top: var(--top-bar-height);
 }
 
 .el-statistic {

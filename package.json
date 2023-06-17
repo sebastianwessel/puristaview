@@ -16,6 +16,7 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
     "@openapi-contrib/openapi-schema-to-json-schema": "^4.0.5",
+    "@sentry/vue": "^7.55.2",
     "@vue-flow/controls": "^1.1.0",
     "@vue-flow/core": "^1.20.1",
     "@vue-flow/minimap": "^1.1.1",

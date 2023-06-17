@@ -32,7 +32,7 @@ onMounted(() => {
       <pane class="right" :size="100 - leftPaneSize">
         <el-main
           style="
-            margin-top: 30px;
+            margin-top: var(--top-bar-height);
             min-height: 100vh;
             padding-bottom: 60px;
             scroll-margin-top: 300px;

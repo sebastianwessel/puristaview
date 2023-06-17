@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { InfoFilled, Share } from '@element-plus/icons-vue'
+import { Bell, InfoFilled, Link, Share } from '@element-plus/icons-vue'
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 
 import ContentWithLeftSidebar from '@/components/ContentWithLeftSidebar.vue'
 import MarkdownContent from '@/components/MarkdownContent.vue'
@@ -10,12 +11,31 @@ const _props = defineProps<{ projectId?: string }>()
 
 const store = useStore()
 const projects = useProjects()
+const route = useRoute()
 
 const serviceCount = computed(() => store.servicesGroupedByName.length)
 const eventCount = computed(() => store.allEvents.length)
 const endpointCount = computed(() => store.allEndpoints.length)
 
 const project = computed(() => projects.activeProject)
+
+const active = computed(() => {
+  const part = route.path.split('/')
+
+  if (part.length < 4) {
+    return 'projectInfo'
+  }
+  if (part[3].includes('services')) {
+    return 'services'
+  }
+  if (part[3].includes('events')) {
+    return 'events'
+  }
+  if (part[3].includes('rest-api')) {
+    return 'restApi'
+  }
+  return 'projectInfo'
+})
 </script>
 
 <template>
@@ -23,7 +43,11 @@ const project = computed(() => projects.activeProject)
     <ContentWithLeftSidebar>
       <template #sidebar>
         <div style="position: fixed; margin-top: 100px">
-          <el-menu style="border-right: none !important; width: 240px; --el-menu-bg-color: none" :router="true">
+          <el-menu
+            :default-active="active"
+            style="border-right: none !important; width: 240px; --el-menu-bg-color: none"
+            :router="true"
+          >
             <el-menu-item index="projectInfo" :route="{ name: 'projectInfo', params: { projectId } }"
               ><template #title>
                 <el-icon><InfoFilled /></el-icon>
@@ -33,7 +57,20 @@ const project = computed(() => projects.activeProject)
             <el-menu-item index="services" :route="{ name: 'services', params: { projectId } }"
               ><template #title>
                 <el-icon><Share /></el-icon>
-                <strong>Services</strong>
+                <strong>Services</strong><small>&nbsp;({{ serviceCount }})</small>
+              </template></el-menu-item
+            >
+
+            <el-menu-item index="events" :route="{ name: 'events', params: { projectId } }"
+              ><template #title>
+                <el-icon><Bell /></el-icon>
+                <strong>Events</strong><small>&nbsp;({{ eventCount }})</small>
+              </template></el-menu-item
+            >
+            <el-menu-item index="restApi" :route="{ name: 'restApi', params: { projectId } }"
+              ><template #title>
+                <el-icon><Link /></el-icon>
+                <strong>Rest-API</strong><small>&nbsp;({{ endpointCount }})</small>
               </template></el-menu-item
             >
           </el-menu>
@@ -48,9 +85,14 @@ const project = computed(() => projects.activeProject)
 </template>
 
 <style scoped lang="scss">
+.item {
+  margin-top: 10px;
+  margin-right: 40px;
+}
+
 .content {
   text-align: center;
-  margin-top: 60px;
+  margin-top: var(--top-bar-height);
 }
 
 .el-statistic {
