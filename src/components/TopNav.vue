@@ -28,7 +28,7 @@ const active = computed(() => {
 <template>
   <div style="display: flex">
     <el-menu :default-active="active" mode="horizontal" :router="true" :ellipsis="false">
-      <el-menu-item index="0" :route="{ name: 'home' }"
+      <el-menu-item index="0" :route="{ name: 'projects' }"
         ><el-icon><CaretLeft /></el-icon><strong>Projects</strong></el-menu-item
       >
     </el-menu>

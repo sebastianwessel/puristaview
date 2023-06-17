@@ -1,17 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import CommandInfo from '@/components/CommandInfo.vue'
-import ServiceInfo from '@/components/ServiceInfo.vue'
-import SubscriptionInfo from '@/components/SubscriptionInfo.vue'
-import DiscoverView from '@/views/DiscoverView.vue'
-import EventsView from '@/views/EventsView.vue'
-import HomeView from '@/views/HomeView.vue'
-import LanesView from '@/views/LanesView.vue'
-import ProjectInfoView from '@/views/ProjectInfoView.vue'
-import ProjectView from '@/views/ProjectView.vue'
-import RestApiView from '@/views/RestApiView.vue'
-import ServicesView from '@/views/ServicesView.vue'
-import ServiceVersionView from '@/views/ServiceVersionView.vue'
+const CommandInfo = () => import('@/components/CommandInfo.vue')
+const ServiceInfo = () => import('@/components/ServiceInfo.vue')
+const SubscriptionInfo = () => import('@/components/SubscriptionInfo.vue')
+const DiscoverView = () => import('@/views/DiscoverView.vue')
+const EventsView = () => import('@/views/EventsView.vue')
+const HomeView = () => import('@/views/HomeView.vue')
+const LanesView = () => import('@/views/LanesView.vue')
+const ProjectInfoView = () => import('@/views/ProjectInfoView.vue')
+const ProjectsView = () => import('@/views/ProjectsView.vue')
+const ProjectView = () => import('@/views/ProjectView.vue')
+const RestApiView = () => import('@/views/RestApiView.vue')
+const ServicesView = () => import('@/views/ServicesView.vue')
+const ServiceVersionView = () => import('@/views/ServiceVersionView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,8 +37,12 @@ const router = createRouter({
     },
     {
       path: '/projects',
-      name: 'projects',
       children: [
+        {
+          path: '',
+          name: 'projects',
+          component: ProjectsView,
+        },
         {
           path: ':projectId',
           name: 'project',
